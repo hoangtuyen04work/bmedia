@@ -113,7 +113,6 @@ public class TokenUtils {
                     .expirationTime(Date.from(Instant.now().plus(24*60*60, ChronoUnit.SECONDS)))
                     .jwtID(UUID.randomUUID().toString())
                     .claim("roles",buildRoles(user.getRoles()))
-                    .claim("scope", List.of("HEHE"))
                     .build();
         }
         else{

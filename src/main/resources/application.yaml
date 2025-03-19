@@ -24,3 +24,8 @@ spring:
 #        dialect: org.hibernate.dialect.MySQLDialect
 jwt:
   signerKey: "4FUNMjFiPr1J29IIqbjc7QbPpX2RPfQSVAH8b5dQHVK5XxyTdjC6Ax9DG8YodTb5"
+amazon:
+  accessKey: "AKIAVRUVSN7O6R7B34E2"
+  secretKey: "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"
+  region: "ap-southeast-1"
+  bucket-name: "tuyen-third-bucket"

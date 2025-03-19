@@ -24,6 +24,7 @@ public class UserEntity extends FormEntity{
     String userName;
     @Column(nullable = false)
     String password;
+    String imageLink;
     String email;
     String phone;
     String bio;

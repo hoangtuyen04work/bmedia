@@ -21,6 +21,7 @@ public class UserMapping {
         response.setUserName(user.getUserName());
         response.setEmail(user.getEmail() != null ? user.getEmail() : ""); // Xử lý null thành chuỗi rỗng
         response.setPhone(user.getPhone() != null ? user.getPhone() : "");
+        response.setImageLink(user.getImageLink() != null ? user.getImageLink() : "");
         response.setBio(user.getBio() != null ? user.getBio() : "");
         response.setDob(user.getDob() != null ? user.getDob() : null);
         response.setAddress(user.getAddress() != null ? user.getAddress() : "");

@@ -3,6 +3,7 @@ package io.github.hoangtuyen04work.social_backend.configuration;
 import io.github.hoangtuyen04work.social_backend.entities.Authority;
 import io.github.hoangtuyen04work.social_backend.entities.RoleEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
+import io.github.hoangtuyen04work.social_backend.enums.State;
 import io.github.hoangtuyen04work.social_backend.repositories.AuthorityRepo;
 import io.github.hoangtuyen04work.social_backend.repositories.RoleRepo;
 import io.github.hoangtuyen04work.social_backend.repositories.UserRepo;
@@ -49,7 +50,7 @@ public class ApplicationInitConfig {
                 roleRepo.save(user);
                 roles.add(user);
             }
-            if(!userRepo.existsByCustomId("ADMIN")){
+            if(!userRepo.existsByCustomIdAndState("ADMIN", State.CREATED)){
                 UserEntity user = UserEntity
                                 .builder()
                                 .customId("ADMIN")

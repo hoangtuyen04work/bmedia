@@ -14,6 +14,7 @@ import java.util.Date;
 public class UserResponse {
     String id;
     String userName;
+    String imageLink;
     String customId;
     String email;
     String phone;

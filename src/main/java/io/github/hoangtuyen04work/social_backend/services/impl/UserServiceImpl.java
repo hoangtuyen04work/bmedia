@@ -1,15 +1,23 @@
 package io.github.hoangtuyen04work.social_backend.services.impl;
 
+import io.github.hoangtuyen04work.social_backend.dto.request.EditUserRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
+import io.github.hoangtuyen04work.social_backend.enums.State;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.UserRepo;
+import io.github.hoangtuyen04work.social_backend.services.RefreshTokenService;
 import io.github.hoangtuyen04work.social_backend.services.RoleService;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
+import io.github.hoangtuyen04work.social_backend.services.redis.TokenRedisService;
+import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
+import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +33,59 @@ public class UserServiceImpl implements UserService {
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserMapping userMapping;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+    @Autowired
+    private TokenRedisService tokenRedisService;
+    //to send image into amazon 3s
+    @Autowired
+    private Amazon3SUtils amazon3SUtils;
+
+    @Override
+    public boolean deleteUser() throws AppException {
+        UserEntity user = getUserCurrent();
+        user.setCustomId("null");
+        user.setEmail("null");
+        user.setPhone("null");
+        userRepo.save(user);
+        tokenRedisService.deleteToken(user.getId());
+        refreshTokenService.deleteRefreshTokenByUserId(user.getId());
+        return true;
+    }
+
+    @Override
+    public UserResponse changeInfo(EditUserRequest request) throws AppException {
+        UserEntity user = getUserCurrent();
+        user.setCustomId(request.getCustomId());
+        user.setUserName(request.getUserName());
+        user.setBio(request.getBio());
+        user.setDob(request.getDob());
+        user.setAddress(request.getAddress());
+        String link = amazon3SUtils.addImageS3(request.getImageFile());
+        if(link != null) user.setImageLink(link);
+        userRepo.save(user);
+        return userMapping.toUserResponse(user);
+    }
+
+    @Override
+    public UserEntity changePassword(UserEntity user, String newPassword){
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepo.save(user);
+    }
+
+    @Override
+    public boolean isRightPassword(String password) throws AppException {
+        UserEntity user = getUserCurrent();
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+
+    @Override
+    public UserEntity getUserCurrent() throws AppException {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepo.findById(userId).orElseThrow(()-> new AppException(ErrorCode.CONFLICT));
+    }
 
     @Override
     public UserEntity findUserById(String id) throws AppException {
@@ -33,16 +94,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity loginByEmail(UserLoginRequest request) throws AppException {
-        UserEntity user =  userRepo.findByEmail(request.getEmail())
+        UserEntity user =  userRepo.findByEmailAndState(request.getEmail(), State.CREATED)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_AUTHENTICATION));
         if(passwordEncoder.matches(request.getPassword(), user.getPassword())) return user;
-
         throw new AppException(ErrorCode.NOT_AUTHENTICATION);
     }
 
     @Override
     public UserEntity loginByPhone(UserLoginRequest request) throws AppException {
-        UserEntity user =  userRepo.findByPhone(request.getPhone())
+        UserEntity user =  userRepo.findByPhoneAndState(request.getPhone(), State.CREATED)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_AUTHENTICATION));
         if(passwordEncoder.matches(request.getPassword(), user.getPassword())) return user;
         throw new AppException(ErrorCode.NOT_AUTHENTICATION);
@@ -50,25 +110,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity loginByCustomId(UserLoginRequest request) throws AppException {
-        UserEntity user = userRepo.findByCustomId(request.getCustomId())
+        UserEntity user = userRepo.findByCustomIdAndState(request.getCustomId(), State.CREATED)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_AUTHENTICATION));
-        if(passwordEncoder.matches(request.getPassword(), user.getPassword())) return user;
+        if(passwordEncoder.matches(request.getPassword(), user.getPassword()))
+            return user;
         throw new AppException(ErrorCode.NOT_AUTHENTICATION);
     }
 
     @Override
     public boolean existByEmail(String email){
-        return userRepo.existsByEmail(email);
+        return userRepo.existsByEmailAndState(email, State.CREATED);
     }
 
     @Override
     public boolean existByPhone(String phone){
-        return userRepo.existsByPhone(phone);
+        return userRepo.existsByPhoneAndState(phone, State.CREATED);
     }
 
     @Override
     public boolean existByCustomId(String userId){
-        return userRepo.existsByCustomId(userId);
+        return userRepo.existsByCustomIdAndState(userId, State.CREATED);
     }
 
     @Override

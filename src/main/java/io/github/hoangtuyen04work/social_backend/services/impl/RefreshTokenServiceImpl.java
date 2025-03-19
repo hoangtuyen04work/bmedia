@@ -51,7 +51,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshTokenEntity createRefreshTokenEntity(UserEntity user){
-
         RefreshTokenEntity refreshTokenEntity =  RefreshTokenEntity.builder()
                 .expirationTime(Date.from(Instant.now().plus(24*60*60, ChronoUnit.SECONDS)))
                 .refreshToken(createRefreshToken())

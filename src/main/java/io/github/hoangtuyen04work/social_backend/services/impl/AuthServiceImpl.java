@@ -6,7 +6,6 @@ import io.github.hoangtuyen04work.social_backend.dto.request.ChangePasswordReque
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.AuthResponse;
-import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
@@ -17,7 +16,6 @@ import io.github.hoangtuyen04work.social_backend.utils.TokenUtils;
 import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -39,14 +37,19 @@ public class AuthServiceImpl implements AuthService {
     private UserService userService;
 
 
-//    @Override
-//    public AuthResponse changePassword(ChangePasswordRequest request){
-//        return AuthResponse.builder()
-//                .user(userMapping.toUserResponse(userEntity))
-//                .token(tokenUtils.generateToken(userEntity))
-//                .refreshToken(refreshTokenService.createRefreshTokenEntity(userEntity).getRefreshToken())
-//                .build();
-//    }
+    @Override
+    public AuthResponse changePassword(ChangePasswordRequest request) throws JOSEException, AppException {
+        UserEntity userEntity = userService.getUserCurrent();
+        if( !  userService.isRightPassword(request.getOldPassword()))
+            throw new AppException(ErrorCode.CONFLICT);
+        userService.changePassword(userEntity, request.getNewPassword());
+        refreshTokenService.deleteRefreshTokenByUserId(userEntity.getId());
+        return AuthResponse.builder()
+                .user(userMapping.toUserResponse(userEntity))
+                .token(tokenUtils.generateToken(userEntity))
+                .refreshToken(refreshTokenService.createRefreshTokenEntity(userEntity).getRefreshToken())
+                .build();
+    }
 
     @Override
     public AuthResponse refreshToken(String refreshToken) throws AppException, JOSEException {
@@ -102,6 +105,7 @@ public class AuthServiceImpl implements AuthService {
             userEntity = userService.loginByPhone(request);
         else
             userEntity = userService.loginByCustomId(request);
+        refreshTokenService.deleteRefreshTokenByUserId(userEntity.getId());
         return AuthResponse.builder()
                 .user(userMapping.toUserResponse(userEntity))
                 .token(tokenUtils.generateToken(userEntity))
