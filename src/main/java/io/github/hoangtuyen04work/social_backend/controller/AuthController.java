@@ -55,4 +55,11 @@ public class AuthController {
                 .data(authService.refreshToken(refreshToken))
                 .build();
     }
+
+    @PutMapping("/changepasssword")
+    public ApiResponse<AuthResponse> changePassword(@RequestBody NewPasswordRequest quest) throws AppException, ParseException, JOSEException, JsonProcessingException {
+        return ApiResponse.<AuthResponse>builder()
+                .data(authService.refreshToken(refreshToken))
+                .build();
+    }
 }
