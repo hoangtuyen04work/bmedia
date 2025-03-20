@@ -7,16 +7,11 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
-public class EditUserRequest {
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class PostCreationRequest {
+    String content;
     MultipartFile imageFile;
-    String customId;
-    String userName;
-    String bio;
-    Date dob;
-    String address;
 }

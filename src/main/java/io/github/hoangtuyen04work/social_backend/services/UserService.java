@@ -1,18 +1,22 @@
 package io.github.hoangtuyen04work.social_backend.services;
 
-import io.github.hoangtuyen04work.social_backend.dto.request.ChangePasswordRequest;
-import io.github.hoangtuyen04work.social_backend.dto.request.EditUserRequest;
+import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 
 public interface UserService {
 
+    UserResponse getCurrentUserInfo() throws AppException;
+
+    PublicUserProfileResponse getUserInfo(String customId) throws AppException;
+
     boolean deleteUser() throws AppException;
 
-    UserResponse changeInfo(EditUserRequest request) throws AppException;
+    UserResponse changeInfo(UserEditRequest request) throws AppException;
 
     UserEntity changePassword(UserEntity user, String newPassword);
 
@@ -21,6 +25,8 @@ public interface UserService {
     UserEntity getUserCurrent() throws AppException;
 
     UserEntity findUserById(String id) throws AppException;
+
+    UserEntity findUserByCustomId(String customId) throws AppException;
 
     UserEntity loginByEmail(UserLoginRequest request) throws AppException;
 

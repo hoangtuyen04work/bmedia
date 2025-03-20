@@ -3,14 +3,13 @@ package io.github.hoangtuyen04work.social_backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Builder
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthResponse {
-    String token;
-    String refreshToken;
-    UserResponse user;
+public class CommentResponse {
+    String content;
+    String imageLink;
 }

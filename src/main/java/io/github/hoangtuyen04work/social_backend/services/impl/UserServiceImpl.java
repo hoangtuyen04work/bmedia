@@ -1,8 +1,9 @@
 package io.github.hoangtuyen04work.social_backend.services.impl;
 
-import io.github.hoangtuyen04work.social_backend.dto.request.EditUserRequest;
+import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.enums.State;
@@ -43,6 +44,19 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private Amazon3SUtils amazon3SUtils;
 
+
+    @Override
+    public UserResponse getCurrentUserInfo() throws AppException {
+        UserEntity user = getUserCurrent();
+        return userMapping.toUserResponse(user);
+    }
+
+    @Override
+    public PublicUserProfileResponse getUserInfo(String customId) throws AppException {
+        UserEntity user = findUserByCustomId(customId);
+        return userMapping.toPublicProfile(user);
+    }
+
     @Override
     public boolean deleteUser() throws AppException {
         UserEntity user = getUserCurrent();
@@ -56,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse changeInfo(EditUserRequest request) throws AppException {
+    public UserResponse changeInfo(UserEditRequest request) throws AppException {
         UserEntity user = getUserCurrent();
         user.setCustomId(request.getCustomId());
         user.setUserName(request.getUserName());
@@ -90,6 +104,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findUserById(String id) throws AppException {
         return userRepo.findById(id).orElseThrow(() -> new AppException(ErrorCode.CONFLICT));
+    }
+
+    @Override
+    public UserEntity findUserByCustomId(String customId) throws AppException {
+        return userRepo.findByCustomIdAndState(customId, State.CREATED).orElseThrow(() -> new AppException(ErrorCode.CONFLICT));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.utils;
 
+import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserMapping {
 
+    public PublicUserProfileResponse toPublicProfile(UserEntity user){
+        if (user == null) {
+            return null;
+        }
+        PublicUserProfileResponse response = new PublicUserProfileResponse();
+        response.setCustomId(user.getCustomId());
+        response.setUserName(user.getUserName());
+        response.setImageLink(user.getImageLink() != null ? user.getImageLink() : "");
+        response.setBio(user.getBio() != null ? user.getBio() : "");
+        response.setDob(user.getDob() != null ? user.getDob() : null);
+        response.setAddress(user.getAddress() != null ? user.getAddress() : "");
+        return response;
+    }
+
     public UserResponse toUserResponse(UserEntity user) {
         if (user == null) {
             return null;
         }
         UserResponse response = new UserResponse();
-        response.setId(UUID.randomUUID().toString()); // Nếu cần sinh ID mới
         response.setCustomId(user.getCustomId());
         response.setUserName(user.getUserName());
         response.setEmail(user.getEmail() != null ? user.getEmail() : ""); // Xử lý null thành chuỗi rỗng

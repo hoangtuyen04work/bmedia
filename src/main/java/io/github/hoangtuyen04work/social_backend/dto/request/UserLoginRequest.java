@@ -5,7 +5,8 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserLoginRequest {
     String customId;
