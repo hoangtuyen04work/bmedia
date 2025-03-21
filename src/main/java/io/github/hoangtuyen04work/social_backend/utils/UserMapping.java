@@ -2,15 +2,35 @@ package io.github.hoangtuyen04work.social_backend.utils;
 
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class UserMapping {
+
+    public Set<UserSummaryResponse> toUserSummaryResponses(Set<UserEntity> userEntities) {
+        Set<UserSummaryResponse> userSummaryResponses = new HashSet<>();
+        for (UserEntity userEntity : userEntities) {
+            userSummaryResponses.add(toUserSummaryResponse(userEntity));
+        }
+        return userSummaryResponses;
+    }
+
+    public UserSummaryResponse toUserSummaryResponse(UserEntity userEntity) {
+        return UserSummaryResponse.builder()
+                .userId(userEntity.getId())
+                .userName(userEntity.getUserName())
+                .customId(userEntity.getCustomId())
+                .imageLink(userEntity.getImageLink())
+                .build();
+    }
 
     public PublicUserProfileResponse toPublicProfile(UserEntity user){
         if (user == null) {

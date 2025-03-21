@@ -28,4 +28,7 @@ public class GroupEntity extends FormEntity {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<UserEntity> users;
+
+    @OneToOne
+    UserEntity admin;
 }
