@@ -19,9 +19,10 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.spec.SecretKeySpec;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,7 +46,8 @@ public class SecurityConfig  {
                         ->jwtConfigurer.decoder(customJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(withDefaults())
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         ;
         httpSecurity
@@ -55,8 +57,13 @@ public class SecurityConfig  {
                                 .requestMatchers("/authentication").permitAll()
                                 .requestMatchers("/logoutt").permitAll()
                                 .requestMatchers("/refresh").permitAll()
-                                .anyRequest()
-                                .authenticated());
+                                .requestMatchers("/post", "/post*").hasRole("USER") // Cho phép /post và /post?postId=13
+                                .requestMatchers("/post/new").hasRole("USER")
+                                .requestMatchers("/user/*").hasRole("USER")
+                                .requestMatchers("/reaction").hasRole("USER")
+                                .requestMatchers("/comment").hasRole("USER")
+
+                                .anyRequest().authenticated());
         return httpSecurity.build();
     }
 

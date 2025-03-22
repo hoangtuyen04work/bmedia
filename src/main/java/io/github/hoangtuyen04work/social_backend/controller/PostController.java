@@ -3,9 +3,11 @@ package io.github.hoangtuyen04work.social_backend.controller;
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.PostCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.PostEditRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.CommentResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PostResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
+import io.github.hoangtuyen04work.social_backend.services.CommentService;
 import io.github.hoangtuyen04work.social_backend.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     @Autowired
     private PostService service;
+    @Autowired
+    private CommentService commentService;
+
+    @GetMapping("/all")
+    public ApiResponse<PageResponse<CommentResponse>> getAllComment(@RequestParam String id,
+                                                                    @RequestParam (defaultValue = "0" ) Integer page,
+                                                                    @RequestParam (defaultValue = "10") Integer size) throws AppException {
+        return ApiResponse.<PageResponse<CommentResponse>>builder()
+                .data(commentService.getAllComment(id, page, size))
+                .build();
+    }
 
     @GetMapping("/search")
     public ApiResponse<PageResponse<PostResponse>> getPosts(
@@ -38,6 +51,14 @@ public class PostController {
 //                .build();
 //    }
 
+    @GetMapping("/my")
+    public ApiResponse<PageResponse<PostResponse>> getMyPost(@RequestParam (defaultValue = "0" ) Integer page,
+                                                             @RequestParam (defaultValue = "10") Integer size) throws AppException {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .data(service.getMyPost(page, size))
+                .build();
+    }
+
     @GetMapping("/{userId}")
     public ApiResponse<PageResponse<PostResponse>> getPostsProfile(@PathVariable String userId,
                                               @RequestParam (defaultValue = "0" ) Integer page,
@@ -48,7 +69,7 @@ public class PostController {
     }
 
     @PostMapping("/new")
-    public ApiResponse<PostResponse> newPost(@ModelAttribute PostCreationRequest request){
+    public ApiResponse<PostResponse> newPost(@ModelAttribute PostCreationRequest request) throws AppException {
         return ApiResponse.<PostResponse>builder()
                 .data(service.newPost(request))
                 .build();

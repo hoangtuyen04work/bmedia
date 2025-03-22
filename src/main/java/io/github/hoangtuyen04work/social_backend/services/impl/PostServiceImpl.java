@@ -33,7 +33,19 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private UserService userService;
 
-
+    @Override
+    public PageResponse<PostResponse> getMyPost(Integer page, Integer size) throws AppException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
+        UserEntity user = userService.getUserCurrent();
+        Page<PostEntity> pag = repo.findPostByUser(user, pageable);
+        return PageResponse.<PostResponse>builder()
+                .content(postMapping.toPostResponse(pag.getContent()))
+                .pageNumber(pag.getNumber())
+                .pageSize(pag.getSize())
+                .totalElements(pag.getTotalElements())
+                .totalPages(pag.getTotalPages())
+                .build();
+    }
 
     // PAGE = 1 -> HOME PAGE
     // PAGE = 2 -> PROFILE PAGE;
@@ -72,11 +84,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse newPost(PostCreationRequest request){
+    public PostResponse newPost(PostCreationRequest request) throws AppException {
         PostEntity post = postMapping.toPostEntity(request);
-        if(!request.getImageFile().isEmpty())
+        post.setUser(userService.getUserCurrent());
+        if(request.getImageFile() != null)
             post.setImageLink(amazon3SUtils.addImageS3(request.getImageFile()));
-        return postMapping.toPostResponse(post);
+        return postMapping.toPostResponse(repo.save(post));
     }
 
     @Override

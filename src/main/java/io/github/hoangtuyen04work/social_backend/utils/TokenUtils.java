@@ -69,24 +69,30 @@ public class TokenUtils {
     }
 
     public void isValidToken(String token) throws AppException, ParseException, JOSEException {
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-            SignedJWT signedJWT;
-            try {
-                signedJWT = SignedJWT.parse(token);
-            } catch (ParseException e) {
-                throw e;
-            }
-            String id = signedJWT.getJWTClaimsSet().getSubject();
-            String tokenRedis = redis.getToken(id);
-            if(tokenRedis == null)
-                throw new AppException(ErrorCode.NOT_AUTHENTICATION);
-            else if(!tokenRedis.equals(token))
-                throw new AppException(ErrorCode.NOT_AUTHENTICATION);
-            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            boolean verified = signedJWT.verify(verifier);
-            if(!(verified && expiryTime.after(new Date()))){
-                throw new AppException(ErrorCode.NOT_AUTHENTICATION);
-            }
+        SignedJWT signedJWT;
+        try {
+            signedJWT = SignedJWT.parse(token);
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.NOT_AUTHENTICATION);
+        }
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        boolean verified = signedJWT.verify(verifier);
+        if (!verified) {
+            throw new AppException(ErrorCode.NOT_AUTHENTICATION);
+        }
+        String userId = signedJWT.getJWTClaimsSet().getSubject();
+        String tokenRedis = redis.getToken(userId);
+        if (tokenRedis == null || !tokenRedis.equals(token)) {
+            throw new AppException(ErrorCode.NOT_AUTHENTICATION);
+        }
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        if (expiryTime.before(new Date())) {
+            redis.deleteToken(userId);
+            throw new AppException(ErrorCode.NOT_AUTHENTICATION);
+        }
+        else{
+            System.out.println("123123123123");
+        }
     }
 
     public boolean checkToken(String token) throws JOSEException, ParseException {
@@ -101,7 +107,6 @@ public class TokenUtils {
         return verified && expiryTime.after(new Date());
     }
 
-    //Generate token
     public String generateToken(UserEntity user) throws JOSEException {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet;

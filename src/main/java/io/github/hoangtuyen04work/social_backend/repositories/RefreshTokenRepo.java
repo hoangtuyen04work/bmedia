@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface RefreshTokenRepo extends JpaRepository<RefreshTokenEntity, String> {
     @Modifying
     @Transactional
-    @Query(value = "DELETE  FROM RefreshTokenEntity r WHERE r.user.id = :id")
+    @Query("DELETE  FROM RefreshTokenEntity r WHERE r.user.id = :id")
     void deleteRefreshTokenEntityByUserId(String id);
     boolean existsByRefreshToken(String refreshToken);
     @Modifying
     @Transactional
-    @Query(value = "DELETE  FROM RefreshTokenEntity r WHERE r.refreshToken = :refreshToken")
+    @Query("DELETE  FROM RefreshTokenEntity r WHERE r.refreshToken = :refreshToken")
     void deleteByRefreshToken(String refreshToken);
-    @Query(value = "SELECT r FROM RefreshTokenEntity  r WHERE r.refreshToken = :refreshToken")
+    @Query( "SELECT r FROM RefreshTokenEntity  r WHERE r.refreshToken = :refreshToken")
     Optional<RefreshTokenEntity> findByRefreshToken(String refreshToken);
 }

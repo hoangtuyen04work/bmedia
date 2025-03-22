@@ -2,6 +2,7 @@ package io.github.hoangtuyen04work.social_backend.services.impl;
 
 import io.github.hoangtuyen04work.social_backend.dto.request.CommentCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.CommentResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.entities.CommentEntity;
 import io.github.hoangtuyen04work.social_backend.entities.PostEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
@@ -15,6 +16,10 @@ import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
 import io.github.hoangtuyen04work.social_backend.utils.CommentMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,6 +35,20 @@ public class CommentServiceImpl implements CommentService {
     private UserService userService;
     @Autowired
     private PostService postService;
+
+    @Override
+    public PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size) throws AppException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
+        PostEntity post = postService.findById(postId);
+        Page<CommentEntity> pag = repo.findByPost(post, pageable);
+        return PageResponse.<CommentResponse>builder()
+                .content(commentMapping.toCommentResponse(pag.getContent()))
+                .pageNumber(pag.getNumber())
+                .pageSize(pag.getSize())
+                .totalElements(pag.getTotalElements())
+                .totalPages(pag.getTotalPages())
+                .build();
+    }
 
     @Override
     public CommentResponse createComment(CommentCreationRequest request) throws AppException {

@@ -51,6 +51,7 @@ public class UserMapping {
             return null;
         }
         UserResponse response = new UserResponse();
+        response.setId(user.getId());
         response.setCustomId(user.getCustomId());
         response.setUserName(user.getUserName());
         response.setEmail(user.getEmail() != null ? user.getEmail() : ""); // Xử lý null thành chuỗi rỗng

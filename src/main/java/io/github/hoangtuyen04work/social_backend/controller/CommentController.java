@@ -3,6 +3,8 @@ package io.github.hoangtuyen04work.social_backend.controller;
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.CommentCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.CommentResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.PostResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.services.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,7 @@ public class CommentController {
     @Autowired
     private CommentService service;
 
-    @PostMapping("/new")
+    @PostMapping()
     public ApiResponse<CommentResponse> createComment(@RequestBody CommentCreationRequest request) throws AppException {
         return ApiResponse.<CommentResponse>builder()
                 .data(service.createComment(request))
