@@ -1,4 +1,5 @@
 package io.github.hoangtuyen04work.social_backend.services.impl;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.FriendshipEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.enums.Friendship;
@@ -7,9 +8,15 @@ import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.FriendshipRepo;
 import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
+import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +25,17 @@ public class FriendshipServiceImpl implements FriendshipService {
     private FriendshipRepo repo;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserMapping userMapping;
+
+    @Override
+    public Set<UserSummaryResponse> getMyFriend() throws AppException {
+        List<UserSummaryResponse> myFriends = new ArrayList<>();
+        String myId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Set<UserEntity> friend = repo.findByUser1Id(myId).get();
+        friend.addAll(repo.findByUser1Id(myId).get());
+        return userMapping.toUserSummaryResponses(friend);
+    }
 
     //flag = 1 -> add ; flag = 2 -> accept; flag = 3 delete
     @Override

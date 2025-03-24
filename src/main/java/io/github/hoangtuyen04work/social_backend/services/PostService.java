@@ -16,10 +16,13 @@ public interface PostService {
     // PAGE = 1 -> HOME PAGE
     // PAGE = 2 -> PROFILE PAGE;
     // PAGE = 3 -> SEARCH PAGE
-    PageResponse<PostResponse> getPost(String userId, Integer page, Integer size, int PAGE, String keyWord)
+    PageResponse<PostResponse> getPost(String customId, Integer page, Integer size, int PAGE, String keyWord)
             throws AppException;
 
-    Page<PostEntity> getProfilePage(String userId, Pageable pageable) throws AppException;
+
+    Page<PostEntity> getProfilePageByCustomId(String customId, Pageable pageable) throws AppException;
+
+    Page<PostEntity> getProfilePageByUserId(String userId, Pageable pageable) throws AppException;
 
     Page<PostEntity> getSearchPage(Pageable pageable, String keyWord);
 

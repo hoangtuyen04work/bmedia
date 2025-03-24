@@ -3,12 +3,20 @@ package io.github.hoangtuyen04work.social_backend.services;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
+import io.github.hoangtuyen04work.social_backend.entities.FriendshipEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 
+import java.util.Set;
+
 public interface UserService {
+
+
+    PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size);
 
     UserResponse getCurrentUserInfo() throws AppException;
 

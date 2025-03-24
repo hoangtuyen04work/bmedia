@@ -17,6 +17,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+
     @GetMapping("/user/my_profile")
     public ApiResponse<UserResponse> getMyProfile() throws AppException {
         return ApiResponse.<UserResponse>builder()
@@ -25,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/user/profile")
-    public ApiResponse<PublicUserProfileResponse> getMyProfile(@RequestParam String customId) throws AppException {
+    public ApiResponse<PublicUserProfileResponse> getProfile(@RequestParam String customId) throws AppException {
         return ApiResponse.<PublicUserProfileResponse>builder()
                 .data(userService.getUserInfo(customId))
                 .build();

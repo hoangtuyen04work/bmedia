@@ -1,11 +1,14 @@
 package io.github.hoangtuyen04work.social_backend.controller;
 
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,6 +17,12 @@ public class FriendController {
     @Autowired
     private FriendshipService service;
 
+    @GetMapping("/all")
+    public ApiResponse<Set<UserSummaryResponse>> getMyFriend() throws AppException {
+        return ApiResponse.<Set<UserSummaryResponse>>builder()
+                .data(service.getMyFriend())
+                .build();
+    }
 
     @PostMapping("/add")
     public ApiResponse<Boolean> addFriend(@RequestBody String friendId) throws AppException {

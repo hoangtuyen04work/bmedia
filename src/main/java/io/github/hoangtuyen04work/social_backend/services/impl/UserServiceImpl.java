@@ -3,8 +3,10 @@ package io.github.hoangtuyen04work.social_backend.services.impl;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.enums.State;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
@@ -18,6 +20,9 @@ import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
 import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,10 +45,22 @@ public class UserServiceImpl implements UserService {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private TokenRedisService tokenRedisService;
-    //to send image into amazon 3s
     @Autowired
     private Amazon3SUtils amazon3SUtils;
 
+
+    @Override
+    public PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> result = userRepo.findByCustomIdContainingAndState(customId, State.CREATED, pageable);
+        return PageResponse.<UserSummaryResponse>builder()
+                .totalPages(result.getTotalPages())
+                .totalElements(result.getTotalElements())
+                .pageSize(result.getSize())
+                .pageNumber(result.getNumber())
+                .content(userMapping.toUserSummaryResponses(result.getContent()))
+                .build();
+    }
 
     @Override
     public UserResponse getCurrentUserInfo() throws AppException {

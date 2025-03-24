@@ -59,12 +59,12 @@ public class PostController {
                 .build();
     }
 
-    @GetMapping("/{userId}")
-    public ApiResponse<PageResponse<PostResponse>> getPostsProfile(@PathVariable String userId,
+    @GetMapping("/{customId}")
+    public ApiResponse<PageResponse<PostResponse>> getPostsProfile(@PathVariable String customId,
                                               @RequestParam (defaultValue = "0" ) Integer page,
                                               @RequestParam (defaultValue = "10") Integer size) throws AppException {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-                .data(service.getPost(userId, page, size, 2, ""))
+                .data(service.getPost(customId, page, size, 2, ""))
                 .build();
     }
 

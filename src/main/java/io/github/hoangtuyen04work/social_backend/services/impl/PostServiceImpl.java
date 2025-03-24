@@ -51,12 +51,13 @@ public class PostServiceImpl implements PostService {
     // PAGE = 2 -> PROFILE PAGE;
     // PAGE = 3 -> SEARCH PAGE
     @Override
-    public PageResponse<PostResponse> getPost(String userId, Integer page, Integer size, int PAGE, String keyWord) throws AppException {
+    public PageResponse<PostResponse> getPost(String customId, Integer page, Integer size, int PAGE, String keyWord) throws AppException {
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
         Page<PostEntity> pag = null;
         if(PAGE == 3) pag = getSearchPage(pageable, keyWord);
-        else if(PAGE == 2) pag = getProfilePage(userId, pageable);
+        else if(PAGE == 2) pag = getProfilePageByCustomId(customId, pageable);
 //        else if(PAGE == 1) pag = getHomePage(userId, pageable);
+        assert pag != null;
         return PageResponse.<PostResponse>builder()
                 .content(postMapping.toPostResponse(pag.getContent()))
                 .pageNumber(pag.getNumber())
@@ -73,7 +74,13 @@ public class PostServiceImpl implements PostService {
 //    }
 
     @Override
-    public Page<PostEntity> getProfilePage(String userId, Pageable pageable) throws AppException {
+    public Page<PostEntity> getProfilePageByCustomId(String customId, Pageable pageable) throws AppException {
+        UserEntity user  = userService.findUserByCustomId(customId);
+        return repo.findPostByUser(user, pageable);
+    }
+
+    @Override
+    public Page<PostEntity> getProfilePageByUserId(String userId, Pageable pageable) throws AppException {
         UserEntity user  = userService.findUserById(userId);
         return repo.findPostByUser(user, pageable);
     }

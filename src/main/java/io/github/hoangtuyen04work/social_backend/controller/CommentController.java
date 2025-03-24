@@ -20,7 +20,7 @@ public class CommentController {
     private CommentService service;
 
     @PostMapping()
-    public ApiResponse<CommentResponse> createComment(@RequestBody CommentCreationRequest request) throws AppException {
+    public ApiResponse<CommentResponse> createComment(@ModelAttribute CommentCreationRequest request) throws AppException {
         return ApiResponse.<CommentResponse>builder()
                 .data(service.createComment(request))
                 .build();

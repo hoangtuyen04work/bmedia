@@ -62,6 +62,9 @@ public class SecurityConfig  {
                                 .requestMatchers("/user/*").hasRole("USER")
                                 .requestMatchers("/reaction").hasRole("USER")
                                 .requestMatchers("/comment").hasRole("USER")
+                                .requestMatchers("/friendship").hasRole("USER")
+                                .requestMatchers("/friendship/*").hasRole("USER")
+                                .requestMatchers("/search/*").hasRole("USER")
 
                                 .anyRequest().authenticated());
         return httpSecurity.build();
