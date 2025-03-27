@@ -17,6 +17,4 @@ public interface UserRepo extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByPhoneAndState(String phone, State state);
     Optional<UserEntity> findByCustomIdAndState(String userId, State state);
     Page<UserEntity> findByCustomIdContainingAndState(String customId, State state, Pageable pageable);
-
-
 }

@@ -96,5 +96,11 @@ public class PostController {
                 .data(true)
                 .build();
     }
-}
+
+    @GetMapping("/home")
+    public ApiResponse<PageResponse<PostResponse>> getPost() throws AppException {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .data(service.getPostById(postId))
+                .build();
+    }}
 
