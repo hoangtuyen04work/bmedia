@@ -98,9 +98,11 @@ public class PostController {
     }
 
     @GetMapping("/home")
-    public ApiResponse<PageResponse<PostResponse>> getPost() throws AppException {
+    public ApiResponse<PageResponse<PostResponse>> getPost(@RequestParam (defaultValue = "0" ) Integer page,
+                                                           @RequestParam (defaultValue = "10") Integer size) throws AppException {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-                .data(service.getPostById(postId))
+                .data(service.getHomePage(page, size))
                 .build();
-    }}
+    }
+}
 

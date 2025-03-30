@@ -15,12 +15,12 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "friendship")
 public class FriendshipEntity extends FormEntity{
     @ManyToOne
-    @JoinColumn(name = "user1", nullable = false)
-    UserEntity user1;
+    @JoinColumn(name = "sender", nullable = false)
+    UserEntity sender;
 
     @ManyToOne
-    @JoinColumn(name = "user2", nullable = false)
-    UserEntity user2;
+    @JoinColumn(name = "receiver", nullable = false)
+    UserEntity receiver;
 
     @Enumerated(EnumType.STRING)
     Friendship friendship;

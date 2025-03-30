@@ -4,11 +4,16 @@ import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
+import io.github.hoangtuyen04work.social_backend.enums.State;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
+import io.github.hoangtuyen04work.social_backend.repositories.UserRepo;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     private UserService userService;
-
-
 
     @GetMapping("/user/my_profile")
     public ApiResponse<UserResponse> getMyProfile() throws AppException {

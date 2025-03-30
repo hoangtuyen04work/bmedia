@@ -9,6 +9,7 @@ import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.PostRepo;
+import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
 import io.github.hoangtuyen04work.social_backend.services.PostService;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
 import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -32,7 +35,22 @@ public class PostServiceImpl implements PostService {
     private Amazon3SUtils amazon3SUtils;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FriendshipService friendshipService;
 
+    @Override
+    public PageResponse<PostResponse> getHomePage(Integer page, Integer size) throws AppException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
+        Set<UserEntity> friends = friendshipService.getMyFriend2();
+        Page<PostEntity> pag = repo.findByUsers(friends, pageable);
+        return PageResponse.<PostResponse>builder()
+                .content(postMapping.toPostResponse(pag.getContent()))
+                .pageNumber(pag.getNumber())
+                .pageSize(pag.getSize())
+                .totalElements(pag.getTotalElements())
+                .totalPages(pag.getTotalPages())
+                .build();
+    }
     @Override
     public PageResponse<PostResponse> getMyPost(Integer page, Integer size) throws AppException {
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());

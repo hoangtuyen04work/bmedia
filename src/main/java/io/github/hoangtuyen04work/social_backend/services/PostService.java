@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
+    PageResponse<PostResponse> getHomePage(Integer page, Integer size) throws AppException;
+
     PageResponse<PostResponse> getMyPost(Integer page, Integer size) throws AppException;
 
     // PAGE = 1 -> HOME PAGE

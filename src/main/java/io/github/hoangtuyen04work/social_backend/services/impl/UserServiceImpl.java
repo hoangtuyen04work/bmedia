@@ -8,6 +8,7 @@ import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileR
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
+import io.github.hoangtuyen04work.social_backend.enums.Friendship;
 import io.github.hoangtuyen04work.social_backend.enums.State;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
@@ -27,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -52,13 +54,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserEntity> result = userRepo.findByCustomIdContainingAndState(customId, State.CREATED, pageable);
+        String userId  = SecurityContextHolder.getContext().getAuthentication().getName();
+        Page<Object[]> res = userRepo.
+                findFriendByCustomIdContainingAndState(".*" + customId +".*", userId, State.CREATED, pageable);
+        List<UserSummaryResponse> ok = res.stream().map(obj -> new UserSummaryResponse(
+                (String)obj[0],
+                (String)obj[1],
+                (String)obj[2],
+                (String)obj[3],
+                obj[4] != null ? Friendship.valueOf((String) obj[4]) : null
+                )).toList();
         return PageResponse.<UserSummaryResponse>builder()
-                .totalPages(result.getTotalPages())
-                .totalElements(result.getTotalElements())
-                .pageSize(result.getSize())
-                .pageNumber(result.getNumber())
-                .content(userMapping.toUserSummaryResponses(result.getContent()))
+                .totalPages(res.getTotalPages())
+                .totalElements(res.getTotalElements())
+                .pageSize(res.getSize())
+                .pageNumber(res.getNumber())
+                .content(ok)
                 .build();
     }
 

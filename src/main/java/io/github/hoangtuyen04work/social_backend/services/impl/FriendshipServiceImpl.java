@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -29,13 +29,28 @@ public class FriendshipServiceImpl implements FriendshipService {
     private UserMapping userMapping;
 
     @Override
-    public Set<UserSummaryResponse> getMyFriend() throws AppException {
-        List<UserSummaryResponse> myFriends = new ArrayList<>();
+    public Set<UserEntity> getMyFriend2()   {
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Set<UserEntity> friend = repo.findByUser1Id(myId).get();
-        friend.addAll(repo.findByUser1Id(myId).get());
+        Set<UserEntity> friend = repo.findBySenderIdAndFriendship(myId, Friendship.ACCEPTED).get();
+        friend.addAll(repo.findByReceiverIdAndFriendship(myId, Friendship.ACCEPTED).get());
+        return friend;
+    }
+
+    @Override
+    public Set<UserSummaryResponse> getAllPending()   {
+        String myId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Set<UserEntity> friend = repo.findByReceiverIdAndFriendship(myId, Friendship.PENDING).get();
         return userMapping.toUserSummaryResponses(friend);
     }
+
+    @Override
+    public Set<UserSummaryResponse> getMyFriend()   {
+        String myId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Set<UserEntity> friend = repo.findBySenderIdAndFriendship(myId, Friendship.ACCEPTED).get();
+        friend.addAll(repo.findByReceiverIdAndFriendship(myId, Friendship.ACCEPTED).get());
+        return userMapping.toUserSummaryResponses(friend);
+    }
+
 
     //flag = 1 -> add ; flag = 2 -> accept; flag = 3 delete
     @Override
@@ -43,23 +58,25 @@ public class FriendshipServiceImpl implements FriendshipService {
         UserEntity user = userService.getUserCurrent();
         UserEntity friend = userService.findUserById(friendId);
         if(flag == 1){
-            if(isFriend(user.getId(), friendId, 2) || !isFriend(user.getId(), friendId, 1))
+            if(isFriend(user.getId(), friendId, 2)|| isFriend(user.getId(), friendId, 1))
                 return false;
             FriendshipEntity friendship = FriendshipEntity.builder()
-                    .user1(user)
-                    .user2(friend)
+                    .sender(user)
+                    .receiver(friend)
                     .friendship(Friendship.PENDING)
                     .build();
             repo.save(friendship);
         }
         else if(flag == 2){
-            if(!isFriend(user.getId(), friendId, 2)) return false;
-            FriendshipEntity friendship = findByUserIdAndFriendId(user.getId(), friendId);
+            if(!isFriend(friendId, user.getId(), 2)) return false;
+            FriendshipEntity friendship = findByUserIdAndFriendId(friendId, user.getId());
             friendship.setFriendship(Friendship.ACCEPTED);
             repo.save(friendship);
         }
         else{
             FriendshipEntity friendship = findByUserIdAndFriendId(user.getId(), friendId);
+            repo.delete(friendship);
+            friendship = findByUserIdAndFriendId(friendId, user.getId());
             repo.delete(friendship);
         }
         return true;
@@ -68,18 +85,20 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public FriendshipEntity findByUserIdAndFriendId(String userId, String friendId) throws AppException {
         return repo.findByUserIdAndFriendId(userId, friendId)
-                .orElse(repo.findByUserIdAndFriendId(friendId, userId)
-                        .orElseThrow(() -> new AppException(ErrorCode.CONFLICT)));
+                .orElseThrow(() -> new AppException(ErrorCode.CONFLICT));
     }
 
     @Override
     public boolean isFriend(String userId, String friendId, int flag){
-        if(flag == 1 )
-            if(repo.existsByUserIdAndFriendIdAndFriendship(userId, friendId, Friendship.ACCEPTED)) return true;
-            else return  repo.existsByUserIdAndFriendIdAndFriendship(friendId, userId, Friendship.ACCEPTED);
-        if(flag == 2 )
-            if(repo.existsByUserIdAndFriendIdAndFriendship(userId, friendId, Friendship.PENDING)) return true;
-            else return repo.existsByUserIdAndFriendIdAndFriendship(friendId, userId, Friendship.PENDING);
+        if(flag == 1 ) {
+            boolean x = repo.existsBySenderIdAndReceiverIdAndFriendship(userId, friendId, Friendship.ACCEPTED);
+            boolean y = repo.existsBySenderIdAndReceiverIdAndFriendship(friendId, userId, Friendship.ACCEPTED);
+            if (x) return true;
+            else return y;
+        }
+        if(flag == 2 ) {
+            return repo.existsBySenderIdAndReceiverIdAndFriendship(userId, friendId, Friendship.PENDING);
+        }
         return false;
     }
 }

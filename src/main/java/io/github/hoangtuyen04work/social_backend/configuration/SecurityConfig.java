@@ -57,15 +57,14 @@ public class SecurityConfig  {
                                 .requestMatchers("/authentication").permitAll()
                                 .requestMatchers("/logoutt").permitAll()
                                 .requestMatchers("/refresh").permitAll()
-                                .requestMatchers("/post", "/post*").hasRole("USER") // Cho phép /post và /post?postId=13
-                                .requestMatchers("/post/new").hasRole("USER")
+                                .requestMatchers("/post", "/post/*").hasRole("USER") // Cho phép /post và /post?postId=13
                                 .requestMatchers("/user/*").hasRole("USER")
                                 .requestMatchers("/reaction").hasRole("USER")
                                 .requestMatchers("/comment").hasRole("USER")
-                                .requestMatchers("/friendship").hasRole("USER")
+                                .requestMatchers("/friendship/all/*").hasRole("USER")
                                 .requestMatchers("/friendship/*").hasRole("USER")
                                 .requestMatchers("/search/*").hasRole("USER")
-
+                                .requestMatchers("/ss/old").permitAll()
                                 .anyRequest().authenticated());
         return httpSecurity.build();
     }

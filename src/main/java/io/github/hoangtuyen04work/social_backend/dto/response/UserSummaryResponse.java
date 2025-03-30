@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.dto.response;
 
+import io.github.hoangtuyen04work.social_backend.enums.Friendship;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,4 +14,5 @@ public class UserSummaryResponse {
     String customId;
     String userName;
     String imageLink;
+    Friendship friendship;
 }

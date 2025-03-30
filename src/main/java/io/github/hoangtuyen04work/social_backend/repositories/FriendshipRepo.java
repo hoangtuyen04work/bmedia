@@ -14,17 +14,25 @@ import java.util.Set;
 @Repository
 public interface FriendshipRepo extends JpaRepository<FriendshipEntity, String> {
     @Query(value = "SELECT  COUNT(f) > 0 FROM FriendshipEntity f " +
-            "WHERE f.user1.id = :userId AND f.user2.id = :friendId AND f.friendship = :friendship")
-    boolean existsByUserIdAndFriendIdAndFriendship(@Param("userId") String userId,
-                                                   @Param("friendId") String friendId,
+            "WHERE f.sender.id = :sender AND f.receiver.id = :receiver AND f.friendship = :friendship")
+    boolean existsBySenderIdAndReceiverIdAndFriendship(@Param("sender") String sender,
+                                                   @Param("receiver") String receiver,
                                                    @Param("friendship") Friendship friendship);
     @Query(value = "SELECT  f FROM FriendshipEntity f " +
-            "WHERE f.user1.id = :userId AND f.user2.id = :friendId")
+            "WHERE f.sender.id = :sender AND f.receiver.id = :receiver")
+    Optional<FriendshipEntity> findBySenderIdAndReceiverId(@Param("sender") String sender,
+                                                       @Param("receiver") String receiver);
+
+    @Query("SELECT f FROM FriendshipEntity f WHERE (f.sender.id = :userId AND f.receiver.id = :friendId) " +
+            "OR (f.sender.id = :friendId AND f.receiver.id = :userId)")
     Optional<FriendshipEntity> findByUserIdAndFriendId(@Param("userId") String userId,
                                                        @Param("friendId") String friendId);
-    @Query("SELECT f.user1 FROM FriendshipEntity  f WHERE f.user2.id = :id")
-    Optional<Set<UserEntity>> findByUser2Id(@Param("id") String id);
-    @Query("SELECT f.user2 FROM FriendshipEntity f WHERE f.user1.id = :id")
-    Optional<Set<UserEntity>> findByUser1Id(@Param("id") String id);
+
+    @Query("SELECT f.sender FROM FriendshipEntity f WHERE f.receiver.id = :id AND f.friendship = :friendship")
+    Optional<Set<UserEntity>> findByReceiverIdAndFriendship(@Param("id") String id
+            , @Param("friendship")Friendship friendShip);
+    @Query("SELECT f.sender FROM FriendshipEntity f WHERE f.receiver.id = :id AND f.friendship = :friendship")
+    Optional<Set<UserEntity>> findBySenderIdAndFriendship(@Param("id") String id
+            , @Param("friendship")Friendship friendShip);
 
 }

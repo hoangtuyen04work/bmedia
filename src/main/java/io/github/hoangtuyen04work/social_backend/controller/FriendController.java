@@ -17,10 +17,17 @@ public class FriendController {
     @Autowired
     private FriendshipService service;
 
-    @GetMapping("/all")
+    @GetMapping("/all/accepted")
     public ApiResponse<Set<UserSummaryResponse>> getMyFriend() throws AppException {
         return ApiResponse.<Set<UserSummaryResponse>>builder()
                 .data(service.getMyFriend())
+                .build();
+    }
+
+    @GetMapping("/all/pending")
+    public ApiResponse<Set<UserSummaryResponse>> getAllPending() throws AppException {
+        return ApiResponse.<Set<UserSummaryResponse>>builder()
+                .data(service.getAllPending())
                 .build();
     }
 
