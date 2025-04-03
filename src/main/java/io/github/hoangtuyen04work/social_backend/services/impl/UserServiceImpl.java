@@ -57,12 +57,14 @@ public class UserServiceImpl implements UserService {
         String userId  = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<Object[]> res = userRepo.
                 findFriendByCustomIdContainingAndState(".*" + customId +".*", userId, State.CREATED, pageable);
+
         List<UserSummaryResponse> ok = res.stream().map(obj -> new UserSummaryResponse(
                 (String)obj[0],
                 (String)obj[1],
                 (String)obj[2],
                 (String)obj[3],
-                obj[4] != null ? Friendship.valueOf((String) obj[4]) : null
+                obj[4] != null ? Friendship.valueOf((String) obj[4]) : null,
+                (String)null
                 )).toList();
         return PageResponse.<UserSummaryResponse>builder()
                 .totalPages(res.getTotalPages())

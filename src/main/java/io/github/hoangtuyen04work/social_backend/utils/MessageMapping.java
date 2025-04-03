@@ -18,7 +18,7 @@ public class MessageMapping {
         return MessageResponse.builder()
                 .content(message.getContent())
                 .imageLink(message.getImageLink())
-                .sendAt(LocalDateTime.from(message.getCreationDate()))
+                .sendAt(message.getCreationDate())
                 .senderId(message.getUser().getId())
                 .build();
     }

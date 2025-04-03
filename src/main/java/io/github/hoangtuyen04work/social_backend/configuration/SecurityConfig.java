@@ -64,7 +64,10 @@ public class SecurityConfig  {
                                 .requestMatchers("/friendship/all/*").hasRole("USER")
                                 .requestMatchers("/friendship/*").hasRole("USER")
                                 .requestMatchers("/search/*").hasRole("USER")
-                                .requestMatchers("/ss/old").permitAll()
+                                .requestMatchers("/conversation*").hasRole("USER")
+                                .requestMatchers("/conversation/*").hasRole("USER")
+                                .requestMatchers("/ws").permitAll()
+
                                 .anyRequest().authenticated());
         return httpSecurity.build();
     }

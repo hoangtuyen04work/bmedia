@@ -19,6 +19,7 @@ public class TokenRedisService {
     private RedisTemplate<String, Object> redisTemplate;
 
     public void saveToken(String id, String token) {
+        deleteToken(id);
         String key = "access_token:" + id;
         redisTemplate.opsForValue().set(key, token, Duration.ofHours(24));
     }
@@ -35,5 +36,4 @@ public class TokenRedisService {
         String key = "access_token:" + id;
         redisTemplate.delete(key);
     }
-
 }

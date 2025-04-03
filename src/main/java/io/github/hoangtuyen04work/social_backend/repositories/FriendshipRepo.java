@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,8 +32,18 @@ public interface FriendshipRepo extends JpaRepository<FriendshipEntity, String> 
     @Query("SELECT f.sender FROM FriendshipEntity f WHERE f.receiver.id = :id AND f.friendship = :friendship")
     Optional<Set<UserEntity>> findByReceiverIdAndFriendship(@Param("id") String id
             , @Param("friendship")Friendship friendShip);
-    @Query("SELECT f.sender FROM FriendshipEntity f WHERE f.receiver.id = :id AND f.friendship = :friendship")
+    @Query("SELECT f.receiver FROM FriendshipEntity f WHERE f.sender.id = :id AND f.friendship = :friendship")
     Optional<Set<UserEntity>> findBySenderIdAndFriendship(@Param("id") String id
             , @Param("friendship")Friendship friendShip);
 
+    @Query(value = "SELECT u.id, u.custom_id, u.user_name, u.image_link, c.id " +
+            "FROM users u " +
+            "JOIN friendship f " +
+                "ON (f.sender = :userId AND f.receiver = u.id AND f.friendship = 'ACCEPTED') " +
+                "OR (f.receiver = :userId AND f.sender = u.id AND f.friendship = 'ACCEPTED') " +
+            "JOIN conversations c " +
+                "ON (u.id = c.user1_id AND c.user2_id = :userId) " +
+                "OR (u.id = c.user2_id AND c.user1_id = :userId) " +
+            "WHERE u.id != :userId", nativeQuery = true)
+    List<Object[]> getAllFriendAndConversation(@Param("userId")String userId);
 }

@@ -63,15 +63,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageResponse sendMessage(MessageCreationRequest request, String conversationId) throws AppException {
-        MessageEntity message = createMessage(request, conversationId);
+    public MessageResponse sendMessage(MessageCreationRequest request) throws AppException {
+        MessageEntity message = createMessage(request);
         return messageMapping.toMessageResponse(message);
     }
 
     @Override
-    public MessageEntity createMessage(MessageCreationRequest request, String conversationId) throws AppException {
-        ConversationEntity conversation = conversationService.findById(conversationId);
-        UserEntity user = userService.getUserCurrent();
+    public MessageEntity createMessage(MessageCreationRequest request) throws AppException {
+        ConversationEntity conversation = conversationService.findById(request.getConversationId());
+        UserEntity user = userService.findUserById(request.getSenderId());
         String imageLink = null;
         if(request.getImageFile() != null){
             imageLink = amazon3SUtils.addImageS3(request.getImageFile());

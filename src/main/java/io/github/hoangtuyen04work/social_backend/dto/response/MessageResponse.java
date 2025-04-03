@@ -3,7 +3,8 @@ package io.github.hoangtuyen04work.social_backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,5 +16,5 @@ public class MessageResponse {
     String content;
     String imageLink;
     String senderId;
-    LocalDateTime sendAt;
+    Instant sendAt;
 }

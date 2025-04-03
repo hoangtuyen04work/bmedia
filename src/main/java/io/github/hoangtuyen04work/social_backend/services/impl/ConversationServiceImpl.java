@@ -17,10 +17,6 @@ public class ConversationServiceImpl implements ConversationService {
     private ConversationRepo repo;
 
 
-    @Override
-    public ConversationEntity findById(String userId, String friendId){
-        return repo.findById(userId + "+" + friendId).orElse(repo.findById(friendId + "_" + userId).get());
-    }
 
     @Override
     public boolean existConversation(String conservationId){
@@ -35,11 +31,9 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public ConversationEntity createConversation(UserEntity user1, UserEntity user2){
         ConversationEntity conversation = ConversationEntity.builder()
-                .id(user1.getId() + "_" + user2.getId())
                 .user1(user1)
                 .user2(user2)
                 .build();
         return repo.save(conversation);
     }
-
 }

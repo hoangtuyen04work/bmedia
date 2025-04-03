@@ -6,17 +6,19 @@ import io.github.hoangtuyen04work.social_backend.enums.Friendship;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.FriendshipRepo;
+import io.github.hoangtuyen04work.social_backend.services.ConversationService;
 import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
 import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     private UserService userService;
     @Autowired
     private UserMapping userMapping;
+    @Autowired
+    private ConversationService conversationService;
 
     @Override
     public Set<UserEntity> getMyFriend2()   {
@@ -43,12 +47,24 @@ public class FriendshipServiceImpl implements FriendshipService {
         return userMapping.toUserSummaryResponses(friend);
     }
 
+
+    //my friend all way accepted
     @Override
     public Set<UserSummaryResponse> getMyFriend()   {
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Set<UserEntity> friend = repo.findBySenderIdAndFriendship(myId, Friendship.ACCEPTED).get();
-        friend.addAll(repo.findByReceiverIdAndFriendship(myId, Friendship.ACCEPTED).get());
-        return userMapping.toUserSummaryResponses(friend);
+//        Set<UserEntity> friend = repo.findBySenderIdAndFriendship(myId, Friendship.ACCEPTED).get();
+//        friend.addAll(repo.findByReceiverIdAndFriendship(myId, Friendship.ACCEPTED).get());
+        List<Object[]> res = repo.getAllFriendAndConversation(myId);
+        Set<UserSummaryResponse> ok = res.stream().map(obj ->
+                new UserSummaryResponse(
+                        (String)obj[0],
+                        (String)obj[1],
+                        (String)obj[2],
+                        (String)obj[3],
+                        Friendship.ACCEPTED,
+                        (String)obj[4]
+                )).collect(Collectors.toSet());
+        return ok;
     }
 
 
@@ -68,9 +84,11 @@ public class FriendshipServiceImpl implements FriendshipService {
             repo.save(friendship);
         }
         else if(flag == 2){
-            if(!isFriend(friendId, user.getId(), 2)) return false;
+            if(!isFriend(friendId, user.getId(), 2))
+                return false;
             FriendshipEntity friendship = findByUserIdAndFriendId(friendId, user.getId());
             friendship.setFriendship(Friendship.ACCEPTED);
+            conversationService.createConversation(user, friend);
             repo.save(friendship);
         }
         else{

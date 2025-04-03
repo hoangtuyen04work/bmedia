@@ -15,4 +15,5 @@ public class UserSummaryResponse {
     String userName;
     String imageLink;
     Friendship friendship;
+    String conversationId;
 }

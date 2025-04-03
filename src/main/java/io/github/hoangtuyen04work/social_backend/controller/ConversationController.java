@@ -11,9 +11,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,18 +24,20 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ConservationController {
+public class ConversationController {
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
-    @Autowired
-    ConversationService conversationService;
+
     @Autowired
     MessageService messageService;
-    @MessageMapping("/conservation/{conservationId}")
-    @SendTo("/conservation/messages")
-    public void sendMessage(@Payload MessageCreationRequest request, @PathVariable String conservationId) throws AppException {
-        MessageResponse response = messageService.sendMessage(request, conservationId);
-        simpMessagingTemplate.convertAndSend("/conservation/messages" + conservationId, response);
+
+    @MessageMapping("/conversation/{conversationId}")
+    public void sendMessage(@Payload MessageCreationRequest request,
+                            @DestinationVariable String conversationId) throws AppException {
+        MessageResponse response = messageService.sendMessage(request);
+        for(String receiverId : request.getReceiverId()){
+            simpMessagingTemplate.convertAndSendToUser(receiverId, "/queue/conversation/messages/" + conversationId, response);
+        }
     }
 
     @DeleteMapping("/conversation")
@@ -53,11 +57,11 @@ public class ConservationController {
     }
 
     @GetMapping("/conversation")
-    public ApiResponse<List<MessageResponse>> getChat(@RequestParam String conversationId,
+    public ApiResponse<List<MessageResponse>> getChat(@RequestParam String id,
                                                      @RequestParam(defaultValue = "0") Integer page,
                                                      @RequestParam(defaultValue = "10") Integer size){
         return ApiResponse.<List<MessageResponse>>builder()
-                .data(messageService.getMessages(conversationId, page, size))
+                .data(messageService.getMessages(id, page, size))
                 .build();
     }
 }

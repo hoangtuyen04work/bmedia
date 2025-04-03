@@ -37,6 +37,11 @@ public class TokenUtils {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    public String getUserId(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        return signedJWT.getJWTClaimsSet().getSubject();
+    }
+
     public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -118,6 +123,7 @@ public class TokenUtils {
                     .expirationTime(Date.from(Instant.now().plus(24*60*60, ChronoUnit.SECONDS)))
                     .jwtID(UUID.randomUUID().toString())
                     .claim("roles",buildRoles(user.getRoles()))
+                    .claim("scope", buildAuthorities(user.getRoles()))
                     .build();
         }
         else{

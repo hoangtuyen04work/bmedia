@@ -24,8 +24,8 @@ public interface UserRepo extends JpaRepository<UserEntity, String> {
 
     @Query(value = "SELECT u.id, u.custom_id, u.user_name, u.image_link, " +
             "CASE " +
-                "WHEN f.friendship IS NOT NULL " +
-                "THEN f.friendship " +
+                "WHEN f.friendship IS NOT NULL AND u.id = f.sender AND f.friendship = 'PENDING' THEN 'WAITING' " +
+                "WHEN f.friendship IS NOT NULL THEN f.friendship " +
                 "ELSE NULL " +
             "END AS friendship " +
             "FROM users u LEFT JOIN friendship f " +

@@ -99,9 +99,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(UserLoginRequest request) throws AppException, JOSEException, JsonProcessingException {
         UserEntity userEntity;
-        if(request.getEmail() != null && userService.existByEmail(request.getEmail()))
+        if(request.getEmail() != null && !request.getEmail().isEmpty()  && userService.existByEmail(request.getEmail()))
             userEntity = userService.loginByEmail(request);
-        else if(request.getPhone() != null && userService.existByPhone(request.getPhone()))
+        else if(request.getPhone() != null && !request.getPhone().isEmpty() && userService.existByPhone(request.getPhone()))
             userEntity = userService.loginByPhone(request);
         else
             userEntity = userService.loginByCustomId(request);

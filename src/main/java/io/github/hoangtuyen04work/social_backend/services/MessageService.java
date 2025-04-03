@@ -17,7 +17,7 @@ public interface MessageService {
 
     List<MessageResponse> getMessages(String conversationId, Integer page, Integer size);
 
-    MessageResponse sendMessage(MessageCreationRequest request, String conversationId) throws AppException;
+    MessageResponse sendMessage(MessageCreationRequest request) throws AppException;
 
-    MessageEntity createMessage(MessageCreationRequest request, String conversationId) throws AppException;
+    MessageEntity createMessage(MessageCreationRequest request) throws AppException;
 }
