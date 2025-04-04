@@ -5,6 +5,7 @@ import io.github.hoangtuyen04work.social_backend.dto.response.MessageResponse;
 import io.github.hoangtuyen04work.social_backend.entities.MessageEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface MessageService {
@@ -17,7 +18,7 @@ public interface MessageService {
 
     List<MessageResponse> getMessages(String conversationId, Integer page, Integer size);
 
-    MessageResponse sendMessage(MessageCreationRequest request) throws AppException;
+    MessageResponse sendMessage(MessageCreationRequest request) throws AppException, IOException;
 
-    MessageEntity createMessage(MessageCreationRequest request) throws AppException;
+    MessageEntity createMessage(MessageCreationRequest request) throws AppException, IOException;
 }

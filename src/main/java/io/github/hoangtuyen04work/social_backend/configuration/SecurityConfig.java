@@ -36,8 +36,7 @@ public class SecurityConfig  {
     private CustomJwtDecoder customJwtDecoder;
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-//    @Autowired
-//    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

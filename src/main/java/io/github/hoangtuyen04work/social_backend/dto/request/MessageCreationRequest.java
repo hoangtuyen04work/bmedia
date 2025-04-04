@@ -15,7 +15,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageCreationRequest {
     String content;
-    MultipartFile imageFile;
+    String imageBase64;
+    String fileName;
     String conversationId;
     String senderId;
     List<String> receiverId;

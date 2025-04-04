@@ -5,7 +5,6 @@ import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.MessageCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.MessageResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
-import io.github.hoangtuyen04work.social_backend.services.ConversationService;
 import io.github.hoangtuyen04work.social_backend.services.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,12 +31,13 @@ public class ConversationController {
 
     @MessageMapping("/conversation/{conversationId}")
     public void sendMessage(@Payload MessageCreationRequest request,
-                            @DestinationVariable String conversationId) throws AppException {
+                            @DestinationVariable String conversationId) throws AppException, IOException {
         MessageResponse response = messageService.sendMessage(request);
         for(String receiverId : request.getReceiverId()){
-            simpMessagingTemplate.convertAndSendToUser(receiverId, "/queue/conversation/messages/" + conversationId, response);
+            simpMessagingTemplate.convertAndSendToUser(receiverId, "/queue/conversation/messages/" + conversationId , response);
         }
     }
+
 
     @DeleteMapping("/conversation")
     public ApiResponse<Boolean> deleteMessage(@RequestBody String messageId){

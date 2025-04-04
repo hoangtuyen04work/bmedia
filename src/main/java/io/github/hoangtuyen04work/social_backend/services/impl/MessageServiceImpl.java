@@ -12,6 +12,7 @@ import io.github.hoangtuyen04work.social_backend.services.ConversationService;
 import io.github.hoangtuyen04work.social_backend.services.MessageService;
 import io.github.hoangtuyen04work.social_backend.services.UserService;
 import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
+import io.github.hoangtuyen04work.social_backend.utils.Base64ToMultipartFile;
 import io.github.hoangtuyen04work.social_backend.utils.MessageMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -63,18 +65,18 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageResponse sendMessage(MessageCreationRequest request) throws AppException {
+    public MessageResponse sendMessage(MessageCreationRequest request) throws AppException, IOException {
         MessageEntity message = createMessage(request);
         return messageMapping.toMessageResponse(message);
     }
 
     @Override
-    public MessageEntity createMessage(MessageCreationRequest request) throws AppException {
+    public MessageEntity createMessage(MessageCreationRequest request) throws AppException, IOException {
         ConversationEntity conversation = conversationService.findById(request.getConversationId());
         UserEntity user = userService.findUserById(request.getSenderId());
         String imageLink = null;
-        if(request.getImageFile() != null){
-            imageLink = amazon3SUtils.addImageS3(request.getImageFile());
+        if(request.getImageBase64() != null && !request.getImageBase64().isEmpty()){
+            imageLink = amazon3SUtils.addImageS3(Base64ToMultipartFile.convertBase64ToMultipart(request.getImageBase64(), request.getFileName()));
         }
         MessageEntity message = MessageEntity.builder()
                 .user(user)

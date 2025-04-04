@@ -26,12 +26,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // broker la tang trung gian giua client va server, khi sever muon  gui 1 thong bao nao do thi tin nhan tu
         //server se duoc gui len broker de gui ti nhan do di dua tren cac endpoint, va cac client dang lang nghe tai
         //end point do se nhan duoc tin nhan
-        config.enableSimpleBroker("/topic", "/queue");
+        config.enableSimpleBroker("/topic", "/queue", "/user");
         //khi client muon gui ti nhan den server thi phai co prefix nay, prefix nay duoc dung de danh dau day la 1
         // 1 ti nhan tu client va can duoc controller xu ly, con neu khong co prefix nay thi tin nhan se duoc xem
         //nhu la 1 broadcast de gui toi cac endpoint ma client dang subcribe
         config.setApplicationDestinationPrefixes("/app");
-//        config.setUserDestinationPrefix("/user");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
@@ -40,6 +40,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("*")
                 .addInterceptors(jwtHandshakeInterceptor); // Đăng ký Interceptor
     }
-
-
 }
