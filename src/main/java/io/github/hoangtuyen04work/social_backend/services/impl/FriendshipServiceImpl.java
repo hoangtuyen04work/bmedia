@@ -1,4 +1,5 @@
 package io.github.hoangtuyen04work.social_backend.services.impl;
+import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.FriendshipEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
@@ -12,10 +13,14 @@ import io.github.hoangtuyen04work.social_backend.services.UserService;
 import io.github.hoangtuyen04work.social_backend.utils.UserMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,25 +53,38 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
 
-    //my friend all way accepted
+    //my friend all way accepte
     @Override
-    public Set<UserSummaryResponse> getMyFriend()   {
+    public Set<FriendSummaryResponse> getMyFriend() {
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Set<UserEntity> friend = repo.findBySenderIdAndFriendship(myId, Friendship.ACCEPTED).get();
-//        friend.addAll(repo.findByReceiverIdAndFriendship(myId, Friendship.ACCEPTED).get());
         List<Object[]> res = repo.getAllFriendAndConversation(myId);
-        Set<UserSummaryResponse> ok = res.stream().map(obj ->
-                new UserSummaryResponse(
-                        (String)obj[0],
-                        (String)obj[1],
-                        (String)obj[2],
-                        (String)obj[3],
-                        Friendship.ACCEPTED,
-                        (String)obj[4]
+        Set<FriendSummaryResponse> ok = res.stream().map(obj ->
+                new FriendSummaryResponse(
+                        obj[0] != null ? (String)obj[0] : "",  // userId
+                        obj[1] != null ? (String)obj[1] : "",  // customId
+                        obj[2] != null ? (String)obj[2] : "",  // userName
+                        obj[3] != null ? (String)obj[3] : "",  // imageLink
+                        obj[4] != null ? (String)obj[4] : "",  // conversationId
+                        obj[5] != null ? (String)obj[5] : "",  // newestMessage
+                        obj[6] != null ? toInstant(obj[6]) : null,  // sendTime
+                        obj[7] != null ? (String)obj[7] : ""   // senderId
                 )).collect(Collectors.toSet());
         return ok;
     }
-
+    private Instant toInstant(Object obj) {
+        if (obj instanceof Instant) {
+            return (Instant) obj;
+        } else if (obj instanceof Timestamp) {
+            return ((Timestamp) obj).toInstant();
+        } else if (obj instanceof LocalDateTime) {
+            return ((LocalDateTime) obj).toInstant(ZoneOffset.UTC);
+        } else if (obj instanceof Date) {
+            return ((Date) obj).toInstant();
+        } else if (obj instanceof Long) {
+            return Instant.ofEpochMilli((Long) obj);
+        }
+        throw new IllegalArgumentException("Unsupported type for sendTime: " + obj.getClass());
+    }
 
     //flag = 1 -> add ; flag = 2 -> accept; flag = 3 delete
     @Override

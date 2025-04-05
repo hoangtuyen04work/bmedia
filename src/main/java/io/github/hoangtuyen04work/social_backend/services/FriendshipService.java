@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.services;
 
+import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.entities.FriendshipEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
@@ -12,7 +13,7 @@ public interface FriendshipService {
 
     Set<UserSummaryResponse> getAllPending();
 
-    Set<UserSummaryResponse> getMyFriend() throws AppException;
+    Set<FriendSummaryResponse> getMyFriend() throws AppException;
 
     //flag = 1 -> add ; flag = 2 -> accept; flag = 3 delete
     boolean changeFriendShip(String friendId, int flag) throws AppException;

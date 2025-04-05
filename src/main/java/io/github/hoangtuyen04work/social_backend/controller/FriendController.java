@@ -1,6 +1,7 @@
 package io.github.hoangtuyen04work.social_backend.controller;
 
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
@@ -18,8 +19,8 @@ public class FriendController {
     private FriendshipService service;
 
     @GetMapping("/all/accepted")
-    public ApiResponse<Set<UserSummaryResponse>> getMyFriend() throws AppException {
-        return ApiResponse.<Set<UserSummaryResponse>>builder()
+    public ApiResponse<Set<FriendSummaryResponse>> getMyFriend() throws AppException {
+        return ApiResponse.<Set<FriendSummaryResponse>>builder()
                 .data(service.getMyFriend())
                 .build();
     }
