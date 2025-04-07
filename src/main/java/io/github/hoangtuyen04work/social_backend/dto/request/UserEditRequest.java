@@ -17,6 +17,8 @@ public class UserEditRequest {
     String customId;
     String userName;
     String bio;
-    Date dob;
+    String dob;
     String address;
+    String email;
+    String phone;
 }

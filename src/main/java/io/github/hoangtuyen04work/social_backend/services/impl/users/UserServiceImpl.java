@@ -28,6 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -99,12 +102,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse changeInfo(UserEditRequest request) throws AppException {
+    public UserResponse changeInfo(UserEditRequest request) throws AppException, ParseException {
         UserEntity user = getUserCurrent();
-        user.setCustomId(request.getCustomId());
-        user.setUserName(request.getUserName());
-        user.setBio(request.getBio());
-        user.setDob(request.getDob());
+        if(request.getCustomId() != null)
+            user.setCustomId(request.getCustomId());
+        if(request.getUserName() != null)
+            user.setUserName(request.getUserName());
+        if(request.getBio() != null)
+            user.setBio(request.getBio());
+        if(request.getEmail() != null)
+            user.setEmail(request.getEmail());
+        if(request.getPhone() != null)
+            user.setPhone(request.getPhone());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date dob = request.getDob() != null ? dateFormat.parse(request.getDob()) : null;
+        user.setDob(dob);
         user.setAddress(request.getAddress());
         String link = amazon3SUtils.addImageS3(request.getImageFile());
         if(link != null) user.setImageLink(link);

@@ -10,6 +10,8 @@ import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryRespons
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 
+import java.text.ParseException;
+
 public interface UserService {
 
 
@@ -21,7 +23,7 @@ public interface UserService {
 
     boolean deleteUser() throws AppException;
 
-    UserResponse changeInfo(UserEditRequest request) throws AppException;
+    UserResponse changeInfo(UserEditRequest request) throws AppException, ParseException;
 
     UserEntity changePassword(UserEntity user, String newPassword);
 

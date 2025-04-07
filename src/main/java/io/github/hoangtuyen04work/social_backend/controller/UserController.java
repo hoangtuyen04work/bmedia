@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -33,7 +35,7 @@ public class UserController {
 
     @Transactional
     @PutMapping("/user/edit")
-    public ApiResponse<UserResponse> editUserInfo(@ModelAttribute UserEditRequest request) throws AppException {
+    public ApiResponse<UserResponse> editUserInfo(@ModelAttribute UserEditRequest request) throws AppException, ParseException {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.changeInfo(request))
                 .build();
