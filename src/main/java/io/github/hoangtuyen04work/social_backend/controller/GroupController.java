@@ -5,7 +5,7 @@ import io.github.hoangtuyen04work.social_backend.dto.request.GroupActionUser;
 import io.github.hoangtuyen04work.social_backend.dto.request.GroupCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.GroupResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
-import io.github.hoangtuyen04work.social_backend.services.GroupService;
+import io.github.hoangtuyen04work.social_backend.services.conversations.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

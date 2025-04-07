@@ -17,4 +17,5 @@ public class MessageResponse {
     String imageLink;
     String senderId;
     Instant sendAt;
+    String conversationId;
 }

@@ -8,7 +8,7 @@ import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.AuthResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
-import io.github.hoangtuyen04work.social_backend.services.AuthService;
+import io.github.hoangtuyen04work.social_backend.services.users.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

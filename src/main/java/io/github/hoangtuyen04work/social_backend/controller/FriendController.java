@@ -2,9 +2,10 @@ package io.github.hoangtuyen04work.social_backend.controller;
 
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
+import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
-import io.github.hoangtuyen04work.social_backend.services.FriendshipService;
+import io.github.hoangtuyen04work.social_backend.services.users.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +19,37 @@ public class FriendController {
     @Autowired
     private FriendshipService service;
 
-    @GetMapping("/all/accepted")
+    @GetMapping("/all/messing")
     public ApiResponse<Set<FriendSummaryResponse>> getMyFriend() throws AppException {
         return ApiResponse.<Set<FriendSummaryResponse>>builder()
                 .data(service.getMyFriend())
                 .build();
     }
 
+    @GetMapping("/all/accepted")
+    public ApiResponse<PageResponse<UserSummaryResponse>> getAllAccepted
+            (@RequestParam(defaultValue = "0") Integer page,
+             @RequestParam(defaultValue = "10") Integer size)  {
+        return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
+                .data(service.getAllAccepted(page, size))
+                .build();
+    }
+
     @GetMapping("/all/pending")
-    public ApiResponse<Set<UserSummaryResponse>> getAllPending() throws AppException {
-        return ApiResponse.<Set<UserSummaryResponse>>builder()
-                .data(service.getAllPending())
+    public ApiResponse<PageResponse<UserSummaryResponse>> getAllPending
+            (@RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size)  {
+        return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
+                .data(service.getAllPending(page, size))
+                .build();
+    }
+
+    @GetMapping("/all/waiting")
+    public ApiResponse<PageResponse<UserSummaryResponse>> getAllWaiting
+            (@RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size)   {
+        return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
+                .data(service.getAllWaiting(page, size))
                 .build();
     }
 

@@ -1,6 +1,5 @@
 package io.github.hoangtuyen04work.social_backend.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -10,8 +9,7 @@ import io.github.hoangtuyen04work.social_backend.entities.RoleEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
-import io.github.hoangtuyen04work.social_backend.services.RefreshTokenService;
-import io.github.hoangtuyen04work.social_backend.services.UserService;
+import io.github.hoangtuyen04work.social_backend.services.others.RefreshTokenService;
 import io.github.hoangtuyen04work.social_backend.services.redis.TokenRedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

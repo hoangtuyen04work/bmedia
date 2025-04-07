@@ -27,7 +27,6 @@ public class TokenRedisService {
     public String getToken(String id) {
         String key = "access_token:" + id;
         Object value = redisTemplate.opsForValue().get(key);
-        if(value == null) return null;
         String x = value.toString();
         return x.replaceAll("^\"|\"$", "");
     }

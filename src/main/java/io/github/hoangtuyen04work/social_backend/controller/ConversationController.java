@@ -5,7 +5,7 @@ import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.MessageCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.MessageResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
-import io.github.hoangtuyen04work.social_backend.services.MessageService;
+import io.github.hoangtuyen04work.social_backend.services.conversations.MessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
