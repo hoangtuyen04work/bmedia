@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.services.users;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
@@ -15,11 +16,12 @@ import java.text.ParseException;
 public interface UserService {
 
 
-    PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size);
+    PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size)
+            throws JsonProcessingException;
 
-    UserResponse getCurrentUserInfo() throws AppException;
+    UserResponse getCurrentUserInfo() throws AppException, JsonProcessingException;
 
-    PublicUserProfileResponse getUserInfo(String customId) throws AppException;
+    PublicUserProfileResponse getUserInfo(String customId) throws AppException, JsonProcessingException;
 
     boolean deleteUser() throws AppException;
 
@@ -33,7 +35,7 @@ public interface UserService {
 
     UserEntity findUserById(String id) throws AppException;
 
-    UserEntity findUserByCustomId(String customId) throws AppException;
+    UserEntity findUserByCustomId(String customId) throws AppException, JsonProcessingException;
 
     UserEntity loginByEmail(UserLoginRequest request) throws AppException;
 

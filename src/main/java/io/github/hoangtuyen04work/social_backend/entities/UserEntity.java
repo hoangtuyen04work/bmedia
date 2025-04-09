@@ -1,6 +1,7 @@
 package io.github.hoangtuyen04work.social_backend.entities;
 
 
+import io.github.hoangtuyen04work.social_backend.entities.entityListener.UserListener;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(UserListener.class)
 @Table(name = "users")
 public class UserEntity extends FormEntity{
     @Column(nullable = false)

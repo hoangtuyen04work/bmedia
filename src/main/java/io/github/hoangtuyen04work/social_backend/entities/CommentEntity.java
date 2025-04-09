@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.entities;
 
+import io.github.hoangtuyen04work.social_backend.entities.entityListener.CommentListener;
 import io.github.hoangtuyen04work.social_backend.enums.Reaction;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "comments")
+@EntityListeners(CommentListener.class)
 public class CommentEntity extends FormEntity{
     @Column(nullable = false)
     String content;

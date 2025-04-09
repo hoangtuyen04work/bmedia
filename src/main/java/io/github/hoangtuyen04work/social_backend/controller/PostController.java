@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.PostCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.PostEditRequest;
@@ -25,22 +26,13 @@ public class PostController {
     @GetMapping("/all")
     public ApiResponse<PageResponse<CommentResponse>> getAllComment(@RequestParam String id,
                                                                     @RequestParam (defaultValue = "0" ) Integer page,
-                                                                    @RequestParam (defaultValue = "10") Integer size) throws AppException {
+                                                                    @RequestParam (defaultValue = "10") Integer size) throws AppException, JsonProcessingException {
         return ApiResponse.<PageResponse<CommentResponse>>builder()
                 .data(commentService.getAllComment(id, page, size))
                 .build();
     }
 
-    @GetMapping("/search")
-    public ApiResponse<PageResponse<PostResponse>> getPosts(
-                                                            @RequestParam (defaultValue = "0" ) Integer page,
-                                                            @RequestParam (defaultValue = "10") Integer size,
-                                                            @RequestParam (defaultValue = "")String keyWord)
-                                                        throws AppException {
-        return ApiResponse.<PageResponse<PostResponse>>builder()
-                .data(service.getPost("", page, size, 3, keyWord))
-                .build();
-    }
+
 
 //    @GetMapping("/home")
 //    public ApiResponse<PageResponse<PostResponse>> getPostsHome(
@@ -53,7 +45,7 @@ public class PostController {
 
     @GetMapping("/my")
     public ApiResponse<PageResponse<PostResponse>> getMyPost(@RequestParam (defaultValue = "0" ) Integer page,
-                                                             @RequestParam (defaultValue = "10") Integer size) throws AppException {
+                                                             @RequestParam (defaultValue = "10") Integer size) throws AppException, JsonProcessingException {
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .data(service.getMyPost(page, size))
                 .build();
@@ -62,7 +54,7 @@ public class PostController {
     @GetMapping("/{customId}")
     public ApiResponse<PageResponse<PostResponse>> getPostsProfile(@PathVariable String customId,
                                               @RequestParam (defaultValue = "0" ) Integer page,
-                                              @RequestParam (defaultValue = "10") Integer size) throws AppException {
+                                              @RequestParam (defaultValue = "10") Integer size) throws AppException, JsonProcessingException {
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .data(service.getPost(customId, page, size, 2, ""))
                 .build();
@@ -99,7 +91,7 @@ public class PostController {
 
     @GetMapping("/home")
     public ApiResponse<PageResponse<PostResponse>> getPost(@RequestParam (defaultValue = "0" ) Integer page,
-                                                           @RequestParam (defaultValue = "10") Integer size) throws AppException {
+                                                           @RequestParam (defaultValue = "10") Integer size) throws AppException, JsonProcessingException {
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .data(service.getHomePage(page, size))
                 .build();

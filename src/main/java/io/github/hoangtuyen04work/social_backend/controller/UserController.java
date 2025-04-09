@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserEditRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
@@ -19,15 +20,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+
     @GetMapping("/user/my_profile")
-    public ApiResponse<UserResponse> getMyProfile() throws AppException {
+    public ApiResponse<UserResponse> getMyProfile() throws AppException, JsonProcessingException {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getCurrentUserInfo())
                 .build();
     }
 
+
+
     @GetMapping("/user/profile")
-    public ApiResponse<PublicUserProfileResponse> getProfile(@RequestParam String customId) throws AppException {
+    public ApiResponse<PublicUserProfileResponse> getProfile(@RequestParam String customId) throws AppException, JsonProcessingException {
         return ApiResponse.<PublicUserProfileResponse>builder()
                 .data(userService.getUserInfo(customId))
                 .build();

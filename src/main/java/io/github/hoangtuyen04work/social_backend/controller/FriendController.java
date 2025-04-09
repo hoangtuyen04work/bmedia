@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
@@ -20,7 +21,7 @@ public class FriendController {
     private FriendshipService service;
 
     @GetMapping("/all/messing")
-    public ApiResponse<Set<FriendSummaryResponse>> getMyFriend() throws AppException {
+    public ApiResponse<Set<FriendSummaryResponse>> getMyFriend() throws AppException, JsonProcessingException {
         return ApiResponse.<Set<FriendSummaryResponse>>builder()
                 .data(service.getMyFriend())
                 .build();
@@ -29,7 +30,7 @@ public class FriendController {
     @GetMapping("/all/accepted")
     public ApiResponse<PageResponse<UserSummaryResponse>> getAllAccepted
             (@RequestParam(defaultValue = "0") Integer page,
-             @RequestParam(defaultValue = "10") Integer size)  {
+             @RequestParam(defaultValue = "10") Integer size) throws JsonProcessingException {
         return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
                 .data(service.getAllAccepted(page, size))
                 .build();
@@ -38,7 +39,7 @@ public class FriendController {
     @GetMapping("/all/pending")
     public ApiResponse<PageResponse<UserSummaryResponse>> getAllPending
             (@RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size)  {
+            @RequestParam(defaultValue = "10") Integer size) throws JsonProcessingException {
         return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
                 .data(service.getAllPending(page, size))
                 .build();
@@ -47,7 +48,7 @@ public class FriendController {
     @GetMapping("/all/waiting")
     public ApiResponse<PageResponse<UserSummaryResponse>> getAllWaiting
             (@RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size)   {
+            @RequestParam(defaultValue = "10") Integer size) throws JsonProcessingException {
         return ApiResponse.<PageResponse<UserSummaryResponse>>builder()
                 .data(service.getAllWaiting(page, size))
                 .build();

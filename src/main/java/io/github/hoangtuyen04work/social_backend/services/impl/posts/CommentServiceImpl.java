@@ -1,5 +1,6 @@
 package io.github.hoangtuyen04work.social_backend.services.impl.posts;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.request.CommentCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.CommentResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
@@ -11,6 +12,7 @@ import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.CommentRepo;
 import io.github.hoangtuyen04work.social_backend.services.posts.CommentService;
 import io.github.hoangtuyen04work.social_backend.services.posts.PostService;
+import io.github.hoangtuyen04work.social_backend.services.redis.CommentRedis;
 import io.github.hoangtuyen04work.social_backend.services.users.UserService;
 import io.github.hoangtuyen04work.social_backend.utils.Amazon3SUtils;
 import io.github.hoangtuyen04work.social_backend.mapping.CommentMapping;
@@ -35,19 +37,25 @@ public class CommentServiceImpl implements CommentService {
     private UserService userService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private CommentRedis redis;
 
     @Override
-    public PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size) throws AppException {
+    public PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size) throws AppException, JsonProcessingException {
+        PageResponse<CommentResponse> result = redis.getAllComment(postId, page, size);
+        if(result != null) return result;
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
         PostEntity post = postService.findById(postId);
         Page<CommentEntity> pag = repo.findByPost(post, pageable);
-        return PageResponse.<CommentResponse>builder()
+        result =  PageResponse.<CommentResponse>builder()
                 .content(commentMapping.toCommentResponse(pag.getContent()))
                 .pageNumber(pag.getNumber())
                 .pageSize(pag.getSize())
                 .totalElements(pag.getTotalElements())
                 .totalPages(pag.getTotalPages())
                 .build();
+        redis.saveGetAllComment(result, postId, page, size);
+        return result;
     }
 
     @Override
