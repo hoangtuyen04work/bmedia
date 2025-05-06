@@ -20,7 +20,8 @@ public interface AuthService {
 
     boolean authenticateToken(String token) throws AppException, ParseException, JOSEException;
 
-    AuthResponse signup(UserCreationRequest userCreationRequest) throws AppException, JOSEException, JsonProcessingException;
+    AuthResponse signup(UserCreationRequest userCreationRequest)
+            throws AppException, JOSEException, JsonProcessingException;
 
     AuthResponse login(UserLoginRequest request) throws AppException, JOSEException, JsonProcessingException;
 }

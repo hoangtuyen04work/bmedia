@@ -1,12 +1,10 @@
 package io.github.hoangtuyen04work.social_backend.entities.entityListener;
 
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
-import io.github.hoangtuyen04work.social_backend.services.redis.SearchRedis;
-import io.github.hoangtuyen04work.social_backend.services.redis.UserRedis;
+import io.github.hoangtuyen04work.social_backend.utils.ClearRedisUtils;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
-import jakarta.persistence.PrePersist;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +19,23 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserListener {
     @Autowired
-    UserRedis redis;
-    @Autowired
-    SearchRedis searchRedis;
+    ClearRedisUtils clear;
 
     @PostPersist
     public void postPersist(UserEntity user) {
-        redis.clear();
-        searchRedis.clear();
+        clear.clearUserInfo(user);
+        clear.clearSearch(user, null);
     }
 
     @PostUpdate
     public void postUpdate(UserEntity user) {
-        redis.clear();
-        searchRedis.clear();
+        clear.clearUserInfo(user);
+        clear.clearSearch(user, null);
     }
 
     @PostRemove
     public void postRemove(UserEntity user){
-        redis.clear();
-        searchRedis.clear();
+        clear.clearUserInfo(user);
+        clear.clearSearch(user, null);
     }
 }

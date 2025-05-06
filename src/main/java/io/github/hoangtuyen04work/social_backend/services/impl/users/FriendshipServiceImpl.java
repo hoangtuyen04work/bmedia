@@ -10,7 +10,6 @@ import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.FriendshipRepo;
 import io.github.hoangtuyen04work.social_backend.services.conversations.ConversationService;
-import io.github.hoangtuyen04work.social_backend.services.redis.FriendRedis;
 import io.github.hoangtuyen04work.social_backend.services.users.FriendshipService;
 import io.github.hoangtuyen04work.social_backend.services.users.UserService;
 import io.github.hoangtuyen04work.social_backend.mapping.UserMapping;
@@ -42,8 +41,6 @@ public class FriendshipServiceImpl implements FriendshipService {
     private UserMapping userMapping;
     @Autowired
     private ConversationService conversationService;
-    @Autowired
-    private FriendRedis redis;
 
     @Override
     public Set<UserEntity> getMyFriend2()   {
@@ -54,50 +51,35 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public PageResponse<UserSummaryResponse> getAllPending(Integer page, Integer size) throws JsonProcessingException {
+    public PageResponse<UserSummaryResponse> getAllPending(Integer page, Integer size) {
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        PageResponse<UserSummaryResponse> result = redis.getAllPending(myId, page, size);
-        if(result != null) return result;
         Pageable pageable = PageRequest.of(page, size);
         Page<UserEntity> friend = repo.findAllSendRequest(myId, pageable);
-        result =  userMapping.toAllPendingResponse(friend);
-        redis.saveGetAllPending(result, myId,  page, size);
-        return result;
-    }
-
-    //Get all received friend request
-    @Override
-    public PageResponse<UserSummaryResponse> getAllWaiting(Integer page, Integer size) throws JsonProcessingException {
-        String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        PageResponse<UserSummaryResponse> result = redis.getAllWaiting(myId, page, size);
-        if(result != null) return result;
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserEntity> friend = repo.findAllSendRequest(myId, pageable);
-        result = userMapping.toAllWaitingResponse(friend);
-        redis.saveGetAllWaiting(result, myId,  page, size);
-        return result;
+        return userMapping.toAllPendingResponse(friend);
     }
 
     @Override
-    public PageResponse<UserSummaryResponse> getAllAccepted(Integer page, Integer size) throws JsonProcessingException {
+    public PageResponse<UserSummaryResponse> getAllWaiting(Integer page, Integer size)  {
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        PageResponse<UserSummaryResponse> result = redis.getAllAccepted(myId, page, size);
-        if(result != null) return result;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> friend = repo.findAllAddFriendRequest(myId, pageable);
+        return userMapping.toAllWaitingResponse(friend);
+    }
+
+    @Override
+    public PageResponse<UserSummaryResponse> getAllAccepted(Integer page, Integer size){
+        String myId = SecurityContextHolder.getContext().getAuthentication().getName();
         Pageable pageable = PageRequest.of(page, size/2);
         Page<UserEntity> friend = repo.findAllSendRequest(myId, pageable);
-        result =  userMapping.toAllAcceptedResponse(friend);
-        redis.saveGetAllAccepted(result, myId,  page, size);
-        return result;
+        return  userMapping.toAllAcceptedResponse(friend);
     }
 
     //my friend all way accepte
     @Override
-    public Set<FriendSummaryResponse> getMyFriend() throws JsonProcessingException {
+    public Set<FriendSummaryResponse> getMyFriend(){
         String myId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Set<FriendSummaryResponse> result = redis.getMyFriend(myId);
-        if(result != null) return result;
         List<Object[]> res = repo.getAllFriendAndConversation(myId);
-        result =  res.stream().map(obj ->
+        Set<FriendSummaryResponse> result =  res.stream().map(obj ->
                 new FriendSummaryResponse(
                         obj[0] != null ? (String)obj[0] : "",  // userId
                         obj[1] != null ? (String)obj[1] : "",  // customId
@@ -108,7 +90,6 @@ public class FriendshipServiceImpl implements FriendshipService {
                         obj[6] != null ? toInstant(obj[6]) : null,  // sendTime
                         obj[7] != null ? (String)obj[7] : ""   // senderId
                 )).collect(Collectors.toSet());
-        redis.saveGetMyFriend(result, myId);
         return result;
     }
 

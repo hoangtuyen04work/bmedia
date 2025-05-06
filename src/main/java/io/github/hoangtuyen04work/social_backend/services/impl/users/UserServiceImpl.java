@@ -16,7 +16,6 @@ import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.UserRepo;
 import io.github.hoangtuyen04work.social_backend.services.others.RefreshTokenService;
 import io.github.hoangtuyen04work.social_backend.services.others.RoleService;
-import io.github.hoangtuyen04work.social_backend.services.redis.SearchRedis;
 import io.github.hoangtuyen04work.social_backend.services.redis.UserRedis;
 import io.github.hoangtuyen04work.social_backend.services.users.UserService;
 import io.github.hoangtuyen04work.social_backend.services.redis.TokenRedisService;
@@ -57,15 +56,10 @@ public class UserServiceImpl implements UserService {
     private Amazon3SUtils amazon3SUtils;
     @Autowired
     private UserRedis userRedis;
-    @Autowired
-    private SearchRedis searchRedis;
 
 
     @Override
-    public PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size)
-            throws JsonProcessingException {
-        PageResponse<UserSummaryResponse> response = searchRedis.getSearchByCustomId(customId, page, size);
-        if(response != null) return response;
+    public PageResponse<UserSummaryResponse> searchByCustomId(String customId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         String userId  = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<Object[]> res = userRepo.
@@ -78,22 +72,22 @@ public class UserServiceImpl implements UserService {
                 obj[4] != null ? Friendship.valueOf((String) obj[4]) : null,
                 (String)null
                 )).toList();
-        response = PageResponse.<UserSummaryResponse>builder()
+        return  PageResponse.<UserSummaryResponse>builder()
                 .totalPages(res.getTotalPages())
                 .totalElements(res.getTotalElements())
                 .pageSize(res.getSize())
                 .pageNumber(res.getNumber())
                 .content(ok)
                 .build();
-        searchRedis.saveSearchByCustomId(response, customId, page, size);
-        return response;
     }
 
     @Override
     public UserResponse getCurrentUserInfo() throws AppException, JsonProcessingException {
+        String id = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserResponse response = userRedis.getCurrentUserInfo(id);
+        if(response != null)
+            return response;
         UserEntity user = getUserCurrent();
-        UserResponse response = userRedis.getCurrentUserInfo(user.getId());
-        if(response != null) return response;
         response = userMapping.toUserResponse(user);;
         userRedis.saveCurrentUserInfo(response);
         return  response;

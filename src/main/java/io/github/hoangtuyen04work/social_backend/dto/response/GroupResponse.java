@@ -10,6 +10,8 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupResponse {
     String id;

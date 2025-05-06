@@ -20,16 +20,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
-
     @GetMapping("/user/my_profile")
     public ApiResponse<UserResponse> getMyProfile() throws AppException, JsonProcessingException {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getCurrentUserInfo())
                 .build();
     }
-
-
 
     @GetMapping("/user/profile")
     public ApiResponse<PublicUserProfileResponse> getProfile(@RequestParam String customId) throws AppException, JsonProcessingException {

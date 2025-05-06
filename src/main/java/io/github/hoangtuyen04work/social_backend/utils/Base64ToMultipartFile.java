@@ -1,7 +1,5 @@
 package io.github.hoangtuyen04work.social_backend.utils;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;

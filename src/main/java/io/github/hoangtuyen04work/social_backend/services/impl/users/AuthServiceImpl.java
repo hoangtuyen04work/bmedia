@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse signup(UserCreationRequest userCreationRequest) throws AppException, JOSEException, JsonProcessingException {
+    public AuthResponse signup(UserCreationRequest userCreationRequest) throws AppException, JOSEException{
         if(!userService.checkAttribute(userCreationRequest))
             throw  new AppException(ErrorCode.CONFLICT);
         if(userService.existByCustomId(userCreationRequest.getCustomId()))

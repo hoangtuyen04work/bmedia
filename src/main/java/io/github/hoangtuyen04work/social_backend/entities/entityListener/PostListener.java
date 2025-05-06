@@ -1,10 +1,7 @@
 package io.github.hoangtuyen04work.social_backend.entities.entityListener;
 
 import io.github.hoangtuyen04work.social_backend.entities.PostEntity;
-import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
-import io.github.hoangtuyen04work.social_backend.services.redis.PostRedis;
-import io.github.hoangtuyen04work.social_backend.services.redis.SearchRedis;
-import io.github.hoangtuyen04work.social_backend.services.redis.UserRedis;
+import io.github.hoangtuyen04work.social_backend.utils.ClearRedisUtils;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
@@ -22,25 +19,23 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostListener {
     @Autowired
-    PostRedis redis;
-    @Autowired
-    SearchRedis searchRedis;
+    ClearRedisUtils clear;
 
     @PostPersist
-    public void postPersist(PostEntity user) {
-        redis.clear();
-        searchRedis.clear();
+    public void postPersist(PostEntity post) {
+        clear.clearPostInfo(post.getUser());
+        clear.clearSearch(null, post);
     }
 
     @PostUpdate
-    public void postUpdate(PostEntity user) {
-        redis.clear();
-        searchRedis.clear();
+    public void postUpdate(PostEntity post) {
+        clear.clearPostInfo(post.getUser());
+        clear.clearSearch(null, post);
     }
 
     @PostRemove
-    public void postRemove(PostEntity user){
-        redis.clear();
-        searchRedis.clear();
+    public void postRemove(PostEntity post){
+        clear.clearPostInfo(post.getUser());
+        clear.clearSearch(null, post);
     }
 }

@@ -8,7 +8,8 @@ import io.github.hoangtuyen04work.social_backend.entities.CommentEntity;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 
 public interface CommentService {
-    PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size) throws AppException, JsonProcessingException;
+    PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size)
+            throws AppException, JsonProcessingException;
 
     CommentResponse createComment(CommentCreationRequest request) throws AppException;
 

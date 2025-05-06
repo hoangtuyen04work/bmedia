@@ -21,23 +21,14 @@ public class CommentRedis {
 
     public PageResponse<CommentResponse> getAllComment(String postId, Integer page, Integer size)
             throws  JsonProcessingException {
-        String json = (String)redisTemplate.opsForValue().get("postId:" + postId + "page:" + page + "size:" + size);
+        String json = (String)redisTemplate.opsForValue().get("Comment Of Post Id:" + postId + "page:" + page + "size:" + size);
+        if(json == null) return null;
         return mapper.readValue(json, new TypeReference<PageResponse<CommentResponse>>(){});
     }
     public void saveGetAllComment(PageResponse<CommentResponse> data,  String postId, Integer page, Integer size)
             throws JsonProcessingException {
-        String key = ("postId:" + postId + "page:" + page + "size:" + size);
+        String key = ("Comment Of Post Id:" + postId + "page:" + page + "size:" + size);
         String value = mapper.writeValueAsString(data);
         redisTemplate.opsForValue().set(key, value);
     }
-
-
-
-
-    public void clear(){
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-    }
-
-
-
 }

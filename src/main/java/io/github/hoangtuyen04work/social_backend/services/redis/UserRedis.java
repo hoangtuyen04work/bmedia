@@ -21,38 +21,38 @@ public class UserRedis {
     private ObjectMapper mapper;
 
     public UserEntity getFindUserByCustomId(String customId) throws JsonProcessingException {
-        String json = (String)redisTemplate.opsForValue().get(customId);
+        String key = "FindUserByCustomId:" + customId;
+        String json = (String)redisTemplate.opsForValue().get(key);
+        if(json == null) return null;
         return mapper.readValue(json, new TypeReference<UserEntity>(){});
     }
     public void saveFindUserByCustomId(UserEntity user, String customId) throws JsonProcessingException {
         String value = mapper.writeValueAsString(user);
-        redisTemplate.opsForValue().set(customId, value);
+        String key = "FindUserByCustomId:" + customId;
+        redisTemplate.opsForValue().set(key, value);
     }
 
     public PublicUserProfileResponse getUserInfo(String customId) throws JsonProcessingException {
-        String json = (String)redisTemplate.opsForValue().get(customId);
+        String key = "UserInfo:" + customId;
+        String json = (String)redisTemplate.opsForValue().get(key);
+        if(json == null) return null;
         return mapper.readValue(json, new TypeReference<PublicUserProfileResponse>(){});
     }
     public void saveUserInfo(PublicUserProfileResponse user) throws JsonProcessingException {
-        String key = user.getCustomId();
+        String key = "UserInfo:" + user.getCustomId();
         String value = mapper.writeValueAsString(user);
         redisTemplate.opsForValue().set(key, value);
     }
 
     public UserResponse getCurrentUserInfo(String id) throws JsonProcessingException {
-        String json = (String)redisTemplate.opsForValue().get(id);
+        String key = "MyUserInfo:" + id;
+        String json = (String)redisTemplate.opsForValue().get(key);
+        if(json == null) return null;
         return mapper.readValue(json, new TypeReference<UserResponse>(){});
     }
     public void saveCurrentUserInfo(UserResponse user) throws JsonProcessingException {
-        String key = user.getId();
+        String key = "MyUserInfo:" + user.getId();
         String value = mapper.writeValueAsString(user);
         redisTemplate.opsForValue().set(key, value);
     }
-
-    public void clear(){
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-    }
-
-
-
 }

@@ -44,23 +44,19 @@ public class PostServiceImpl implements PostService {
     private PostRedis redis;
 
     @Override
-    public PageResponse<PostResponse> getHomePage(Integer page, Integer size) throws JsonProcessingException {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        PageResponse<PostResponse> response = redis.getGetHomePage(userId, page, size);
-        if(response != null) return response;
+    public PageResponse<PostResponse> getHomePage(Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size, Sort.by("creationDate").descending());
         Set<UserEntity> friends = friendshipService.getMyFriend2();
         Page<PostEntity> pag = repo.findByUsers(friends, pageable);
-        response =  PageResponse.<PostResponse>builder()
+        return  PageResponse.<PostResponse>builder()
                 .content(postMapping.toPostResponse(pag.getContent()))
                 .pageNumber(pag.getNumber())
                 .pageSize(pag.getSize())
                 .totalElements(pag.getTotalElements())
                 .totalPages(pag.getTotalPages())
                 .build();
-        redis.saveGetHomePage(response, userId, page, size);
-        return response;
     }
+
     @Override
     public PageResponse<PostResponse> getMyPost(Integer page, Integer size) throws AppException, JsonProcessingException {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();

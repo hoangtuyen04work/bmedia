@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
     String content;
