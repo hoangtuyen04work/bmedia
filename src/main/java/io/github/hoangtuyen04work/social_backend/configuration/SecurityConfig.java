@@ -56,6 +56,8 @@ public class SecurityConfig  {
                                 .requestMatchers("/authentication").permitAll()
                                 .requestMatchers("/logoutt").permitAll()
                                 .requestMatchers("/refresh").permitAll()
+                                .requestMatchers("/verify/email").permitAll()
+                                .requestMatchers("/signup/email").permitAll()
                                 .requestMatchers("/post", "/post/*").hasRole("USER") // Cho phép /post và /post?postId=13
                                 .requestMatchers("/user/*").hasRole("USER")
                                 .requestMatchers("/reaction").hasRole("USER")
@@ -66,7 +68,7 @@ public class SecurityConfig  {
                                 .requestMatchers("/conversation*").hasRole("USER")
                                 .requestMatchers("/conversation/*").hasRole("USER")
                                 .requestMatchers("/ws").permitAll()
-
+                                .requestMatchers("/email/test").permitAll()
                                 .anyRequest().authenticated());
         return httpSecurity.build();
     }

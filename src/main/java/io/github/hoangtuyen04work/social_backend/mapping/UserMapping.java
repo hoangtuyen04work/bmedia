@@ -1,9 +1,11 @@
 package io.github.hoangtuyen04work.social_backend.mapping;
 
+import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PublicUserProfileResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
+import io.github.hoangtuyen04work.social_backend.entities.EmailCreationTemporaryEntity;
 import io.github.hoangtuyen04work.social_backend.entities.UserEntity;
 import io.github.hoangtuyen04work.social_backend.enums.Friendship;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,33 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class UserMapping {
+
+    public UserCreationRequest toUserCreation(EmailCreationTemporaryEntity request){
+        return UserCreationRequest.builder()
+                .bio(request.getBio())
+                .phone(request.getPhone())
+                .dob(request.getDob())
+                .address(request.getAddress())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .customId(request.getCustomId())
+                .userName(request.getUserName())
+                .build();
+    }
+
+    public EmailCreationTemporaryEntity toEmailTemporary(UserCreationRequest request){
+        return EmailCreationTemporaryEntity.builder()
+                .bio(request.getBio())
+                .phone(request.getPhone())
+                .dob(request.getDob())
+                .address(request.getAddress())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .customId(request.getCustomId())
+                .userName(request.getUserName())
+                .build();
+    }
+
 
     public PageResponse<UserSummaryResponse> toUserSummaryResponses(Page<UserEntity> userEntities) {
         List<UserSummaryResponse> userSummaryResponses = new ArrayList<>();
