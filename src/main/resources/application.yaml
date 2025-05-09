@@ -4,6 +4,17 @@ server:
     context-path: /media
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hoanghuutuyen060204@gmail.com
+    password: hass qchm rasg rzxe
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: ${DATABASE_URL:jdbc:mysql://localhost:3306/ig2?useSSL=false&allowPublicKeyRetrieval=true}
     username: ${DATABASE_USERNAME:root}
@@ -19,8 +30,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-
+      port: ${REDIS_PORT:6380}
 jwt:
   signerKey: ${SIGNED_KEY:4FUNMjFiPr1J29IIqbjc7QbPpX2RPfQSVAH8b5dQHVK5XxyTdjC6Ax9DG8YodTb5}
 

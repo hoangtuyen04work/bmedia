@@ -6,9 +6,11 @@ import io.github.hoangtuyen04work.social_backend.dto.ApiResponse;
 import io.github.hoangtuyen04work.social_backend.dto.request.ChangePasswordRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest;
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
+import io.github.hoangtuyen04work.social_backend.dto.request.VerificationEmailRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.AuthResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.services.users.AuthService;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,29 +26,49 @@ public class AuthController {
 
     @Transactional
     @PutMapping("/changepassword")
-    public ApiResponse<AuthResponse> changePassword(@RequestBody ChangePasswordRequest request) throws JOSEException, AppException {
+    public ApiResponse<AuthResponse> changePassword(@RequestBody ChangePasswordRequest request)
+            throws JOSEException, AppException {
                 return ApiResponse.<AuthResponse>builder()
                 .data(authService.changePassword(request))
                 .build();
     }
 
     @PostMapping("/signup")
-    public ApiResponse<AuthResponse> signup(@RequestBody UserCreationRequest request) throws AppException, JOSEException, JsonProcessingException {
+    public ApiResponse<AuthResponse> signup(@RequestBody UserCreationRequest request)
+            throws AppException, JOSEException, JsonProcessingException, MessagingException {
         return ApiResponse.<AuthResponse>builder()
                 .data(authService.signup(request))
                 .build();
     }
 
+    @PostMapping("/signup/email")
+    public ApiResponse<Boolean> signupByEmail(@RequestBody UserCreationRequest request)
+            throws MessagingException, AppException {
+        return ApiResponse.<Boolean>builder()
+                .data(authService.signupByEmail(request))
+                .build();
+    }
+
+    @PostMapping("/verify/email")
+    public ApiResponse<AuthResponse> signup(@RequestBody VerificationEmailRequest request)
+            throws AppException, JOSEException {
+        return ApiResponse.<AuthResponse>builder()
+                .data(authService.verifySignupByEmail(request.getEmail(), request.getCode(), request.getCustomId()))
+                .build();
+    }
+
     @Transactional
     @PostMapping("/login")
-    public ApiResponse<AuthResponse> login(@RequestBody UserLoginRequest request) throws AppException, JOSEException, JsonProcessingException {
+    public ApiResponse<AuthResponse> login(@RequestBody UserLoginRequest request)
+            throws AppException, JOSEException, JsonProcessingException {
         return ApiResponse.<AuthResponse>builder()
                 .data(authService.login(request))
                 .build();
     }
 
     @GetMapping("/authentication")
-    public ApiResponse<Boolean> authentication(@RequestParam String token) throws AppException, ParseException, JOSEException {
+    public ApiResponse<Boolean> authentication(@RequestParam String token)
+            throws AppException, ParseException, JOSEException {
         return ApiResponse.<Boolean>builder()
                 .data(authService.authenticateToken(token))
                 .build();
@@ -54,7 +76,8 @@ public class AuthController {
 
     @Transactional
     @PutMapping("/logoutt")
-    public ApiResponse<Boolean> logout(@RequestBody String token) throws ParseException, AppException {
+    public ApiResponse<Boolean> logout(@RequestBody String token)
+            throws ParseException, AppException {
         return ApiResponse.<Boolean>builder()
                 .data(authService.logout(token))
                 .build();
@@ -62,7 +85,8 @@ public class AuthController {
 
     @Transactional
     @PutMapping("/refresh")
-    public ApiResponse<AuthResponse> refreshToken(@RequestBody String refreshToken) throws AppException, ParseException, JOSEException, JsonProcessingException {
+    public ApiResponse<AuthResponse> refreshToken(@RequestBody String refreshToken)
+            throws AppException, ParseException, JOSEException, JsonProcessingException {
         return ApiResponse.<AuthResponse>builder()
                 .data(authService.refreshToken(refreshToken))
                 .build();

@@ -7,6 +7,7 @@ import io.github.hoangtuyen04work.social_backend.dto.request.UserCreationRequest
 import io.github.hoangtuyen04work.social_backend.dto.request.UserLoginRequest;
 import io.github.hoangtuyen04work.social_backend.dto.response.AuthResponse;
 import io.github.hoangtuyen04work.social_backend.exception.AppException;
+import jakarta.mail.MessagingException;
 
 import java.text.ParseException;
 
@@ -20,8 +21,16 @@ public interface AuthService {
 
     boolean authenticateToken(String token) throws AppException, ParseException, JOSEException;
 
+    String generateSignupVerificationCode();
+
+    boolean signupByEmail(UserCreationRequest userCreationRequest) throws MessagingException, AppException;
+
+    AuthResponse verifySignupByEmail(String email, String code, String customId) throws AppException, JOSEException;
+
+    boolean verifyEmailCode(String email, String code) throws AppException;
+
     AuthResponse signup(UserCreationRequest userCreationRequest)
-            throws AppException, JOSEException, JsonProcessingException;
+            throws AppException, JOSEException, JsonProcessingException, MessagingException;
 
     AuthResponse login(UserLoginRequest request) throws AppException, JOSEException, JsonProcessingException;
 }
