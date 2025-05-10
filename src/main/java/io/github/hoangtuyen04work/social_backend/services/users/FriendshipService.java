@@ -25,6 +25,9 @@ public interface FriendshipService {
     //flag = 1 -> add ; flag = 2 -> accept; flag = 3 delete
     boolean changeFriendShip(String friendId, int flag) throws AppException;
 
+
+    void sendNotification(UserEntity receiver, String content, String title) throws AppException;
+
     FriendshipEntity findByUserIdAndFriendId(String userId, String friendId) throws AppException;
 
     boolean isFriend(String userId, String friendId, int flag);
