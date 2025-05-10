@@ -1,5 +1,4 @@
 package io.github.hoangtuyen04work.social_backend.services.impl.users;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.hoangtuyen04work.social_backend.dto.response.FriendSummaryResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.PageResponse;
 import io.github.hoangtuyen04work.social_backend.dto.response.UserSummaryResponse;
@@ -10,6 +9,7 @@ import io.github.hoangtuyen04work.social_backend.exception.AppException;
 import io.github.hoangtuyen04work.social_backend.exception.ErrorCode;
 import io.github.hoangtuyen04work.social_backend.repositories.FriendshipRepo;
 import io.github.hoangtuyen04work.social_backend.services.conversations.ConversationService;
+import io.github.hoangtuyen04work.social_backend.services.others.NotificationService;
 import io.github.hoangtuyen04work.social_backend.services.users.FriendshipService;
 import io.github.hoangtuyen04work.social_backend.services.users.UserService;
 import io.github.hoangtuyen04work.social_backend.mapping.UserMapping;
@@ -41,6 +41,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     private UserMapping userMapping;
     @Autowired
     private ConversationService conversationService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public Set<UserEntity> getMyFriend2()   {
@@ -122,6 +124,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .friendship(Friendship.PENDING)
                     .build();
             repo.save(friendship);
+            sendNotification(friend, user.getUserName() + " was send an add friend request.", "");
         }
         else if(flag == 2){
             if(!isFriend(friendId, user.getId(), 2))
@@ -130,6 +133,8 @@ public class FriendshipServiceImpl implements FriendshipService {
             friendship.setFriendship(Friendship.ACCEPTED);
             conversationService.createConversation(user, friend);
             repo.save(friendship);
+            sendNotification(friend, user.getUserName() + " was accept your add friend request.", "");
+
         }
         else{
             FriendshipEntity friendship = findByUserIdAndFriendId(user.getId(), friendId);
@@ -138,6 +143,11 @@ public class FriendshipServiceImpl implements FriendshipService {
             repo.delete(friendship);
         }
         return true;
+    }
+
+    @Override
+    public void sendNotification(UserEntity receiver, String content, String title) throws AppException {
+        notificationService.sendNotification(receiver, content, title);
     }
 
     @Override

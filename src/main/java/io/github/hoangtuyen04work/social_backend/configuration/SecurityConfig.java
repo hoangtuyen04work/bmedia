@@ -67,6 +67,8 @@ public class SecurityConfig  {
                                 .requestMatchers("/search/*").hasRole("USER")
                                 .requestMatchers("/conversation*").hasRole("USER")
                                 .requestMatchers("/conversation/*").hasRole("USER")
+                                .requestMatchers("/notification").hasRole("USER")
+                                .requestMatchers("/notification/*").hasRole("USER")
                                 .requestMatchers("/ws").permitAll()
                                 .requestMatchers("/email/test").permitAll()
                                 .anyRequest().authenticated());
